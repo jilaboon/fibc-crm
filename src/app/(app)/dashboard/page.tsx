@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { getAuthContext } from "@/lib/auth";
+import { getDashboardAnalytics } from "@/lib/analytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -11,27 +12,17 @@ import {
 import { StatusBadge } from "@/components/status-badge";
 import { NewLeadDialog } from "@/components/new-lead-dialog";
 import { NewAmbassadorDialog } from "@/components/new-ambassador-dialog";
+import { LeadsByStatusChart } from "@/components/charts/leads-by-status-chart";
+import { LeadsBySourceChart } from "@/components/charts/leads-by-source-chart";
+import { DealPipelineChart } from "@/components/charts/deal-pipeline-chart";
+import { TopAmbassadorsChart } from "@/components/charts/top-ambassadors-chart";
+import { prisma } from "@/lib/db";
 import Link from "next/link";
 
 export default async function DashboardPage() {
-  const [ambassadorCount, leadCount, developerCount, closedWonCount] =
-    await Promise.all([
-      prisma.ambassador.count(),
-      prisma.lead.count(),
-      prisma.developer.count(),
-      prisma.deal.count({ where: { stage: "ClosedWon" } }),
-    ]);
+  await getAuthContext();
 
-  const topAmbassadors = await prisma.ambassador.findMany({
-    orderBy: { closedDeals: "desc" },
-    take: 5,
-  });
-
-  const recentLeads = await prisma.lead.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-    include: { ambassador: true },
-  });
+  const analytics = await getDashboardAnalytics();
 
   const ambassadors = await prisma.ambassador.findMany({
     select: { id: true, fullName: true },
@@ -49,70 +40,68 @@ export default async function DashboardPage() {
       </div>
 
       {/* כרטיסי סטטיסטיקה */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-5">
         <div className="monday-stat-card" style={{ borderTop: "3px solid #0073ea" }}>
           <div className="text-sm font-medium text-[#676879] mb-1">שגרירים</div>
-          <div className="text-2xl font-bold">{ambassadorCount}</div>
+          <div className="text-2xl font-bold">{analytics.totalAmbassadors}</div>
         </div>
         <div className="monday-stat-card" style={{ borderTop: "3px solid #579bfc" }}>
           <div className="text-sm font-medium text-[#676879] mb-1">לידים</div>
-          <div className="text-2xl font-bold">{leadCount}</div>
+          <div className="text-2xl font-bold">{analytics.totalLeads}</div>
         </div>
         <div className="monday-stat-card" style={{ borderTop: "3px solid #a25ddc" }}>
           <div className="text-sm font-medium text-[#676879] mb-1">יזמים</div>
-          <div className="text-2xl font-bold">{developerCount}</div>
+          <div className="text-2xl font-bold">{analytics.totalDevelopers}</div>
         </div>
         <div className="monday-stat-card" style={{ borderTop: "3px solid #00c875" }}>
           <div className="text-sm font-medium text-[#676879] mb-1">נסגר בהצלחה</div>
-          <div className="text-2xl font-bold">{closedWonCount}</div>
+          <div className="text-2xl font-bold">{analytics.closedWonDeals}</div>
+        </div>
+        <div className="monday-stat-card" style={{ borderTop: "3px solid #fdab3d" }}>
+          <div className="text-sm font-medium text-[#676879] mb-1">עסקאות פעילות</div>
+          <div className="text-2xl font-bold">{analytics.activeDeals}</div>
         </div>
       </div>
 
-      {/* שגרירים מובילים */}
-      <Card>
-        <CardHeader>
-          <div className="monday-group-header monday-group-blue">שגרירים מובילים</div>
-        </CardHeader>
-        <CardContent>
-          <Table className="monday-table">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">שם</TableHead>
-                <TableHead className="text-right">עיר</TableHead>
-                <TableHead className="text-right">הפניות</TableHead>
-                <TableHead className="text-right">נסגרו</TableHead>
-                <TableHead className="text-right">המרה</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {topAmbassadors.map((amb) => (
-                <TableRow key={amb.id}>
-                  <TableCell>
-                    <Link
-                      href={`/ambassadors/${amb.id}`}
-                      className="font-medium hover:underline"
-                    >
-                      {amb.fullName}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{amb.city}</TableCell>
-                  <TableCell>
-                    {amb.totalReferrals}
-                  </TableCell>
-                  <TableCell>
-                    {amb.closedDeals}
-                  </TableCell>
-                  <TableCell>
-                    {amb.totalReferrals > 0
-                      ? `${Math.round((amb.closedDeals / amb.totalReferrals) * 100)}%`
-                      : "0%"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {/* שורה 1: גרפים - לידים */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">לידים לפי סטטוס</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LeadsByStatusChart data={analytics.leadsByStatus} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">לידים לפי מקור</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LeadsBySourceChart data={analytics.leadsBySource} />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* שורה 2: גרפים - עסקאות ושגרירים */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">צינור עסקאות</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DealPipelineChart data={analytics.dealsByStage} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">שגרירים מובילים</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TopAmbassadorsChart data={analytics.topAmbassadors} />
+          </CardContent>
+        </Card>
+      </div>
 
       {/* לידים אחרונים */}
       <Card>
@@ -131,7 +120,7 @@ export default async function DashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentLeads.map((lead) => (
+              {analytics.recentLeads.map((lead) => (
                 <TableRow key={lead.id}>
                   <TableCell>
                     <Link
@@ -145,10 +134,10 @@ export default async function DashboardPage() {
                     <StatusBadge status={lead.status} />
                   </TableCell>
                   <TableCell>
-                    {lead.ambassador?.fullName || "—"}
+                    {lead.ambassador?.fullName || "\u2014"}
                   </TableCell>
-                  <TableCell>{lead.budget || "—"}</TableCell>
-                  <TableCell>{lead.preferredArea || "—"}</TableCell>
+                  <TableCell>{lead.budget || "\u2014"}</TableCell>
+                  <TableCell>{lead.preferredArea || "\u2014"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

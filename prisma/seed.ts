@@ -8,6 +8,7 @@ async function main() {
   await prisma.lead.deleteMany();
   await prisma.developer.deleteMany();
   await prisma.ambassador.deleteMany();
+  await prisma.userProfile.deleteMany();
 
   // Create Ambassadors
   const amb1 = await prisma.ambassador.create({
@@ -21,6 +22,7 @@ async function main() {
       hostsEvents: true,
       totalReferrals: 3,
       closedDeals: 1,
+      referralCode: "yael-cohen",
     },
   });
 
@@ -35,6 +37,7 @@ async function main() {
       hostsEvents: false,
       totalReferrals: 2,
       closedDeals: 0,
+      referralCode: "david-levi",
     },
   });
 
@@ -49,6 +52,7 @@ async function main() {
       hostsEvents: true,
       totalReferrals: 1,
       closedDeals: 0,
+      referralCode: "noa-shapira",
     },
   });
 
@@ -114,6 +118,8 @@ async function main() {
       rooms: "4",
       propertyType: "Apartment",
       readiness: "3-6 months",
+      source: "referral",
+      referralCode: "yael-cohen",
       ambassadorId: amb1.id,
     },
   });
@@ -131,6 +137,8 @@ async function main() {
       rooms: "3",
       propertyType: "Apartment",
       readiness: "6-12 months",
+      source: "referral",
+      referralCode: "yael-cohen",
       ambassadorId: amb1.id,
     },
   });
@@ -148,6 +156,7 @@ async function main() {
       rooms: "5",
       propertyType: "Penthouse",
       readiness: "Immediate",
+      source: "manual",
       ambassadorId: amb1.id,
     },
   });
@@ -164,6 +173,8 @@ async function main() {
       rooms: "3",
       propertyType: "Apartment",
       readiness: "Immediate",
+      source: "referral",
+      referralCode: "david-levi",
       ambassadorId: amb2.id,
     },
   });
@@ -181,6 +192,8 @@ async function main() {
       rooms: "4",
       propertyType: "Villa",
       readiness: "3-6 months",
+      source: "referral",
+      referralCode: "david-levi",
       ambassadorId: amb2.id,
     },
   });
@@ -198,6 +211,7 @@ async function main() {
       rooms: "5+",
       propertyType: "Villa",
       readiness: "12+ months",
+      source: "manual",
       ambassadorId: amb3.id,
     },
   });
@@ -225,10 +239,10 @@ async function main() {
   });
 
   console.log("Seed data created successfully!");
-  console.log(`  - ${3} ambassadors`);
-  console.log(`  - ${6} leads`);
-  console.log(`  - ${4} developers`);
-  console.log(`  - ${2} deals`);
+  console.log(`  - 3 ambassadors (with referral codes)`);
+  console.log(`  - 6 leads`);
+  console.log(`  - 4 developers`);
+  console.log(`  - 2 deals`);
 }
 
 main()
