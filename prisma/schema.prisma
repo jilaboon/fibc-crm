@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Ambassador {
+  id             String   @id @default(uuid())
+  fullName       String
+  email          String   @unique
+  phone          String?
+  country        String   @default("Israel")
+  city           String
+  languages      String   // comma-separated: "Hebrew,English"
+  hostsEvents    Boolean  @default(false)
+  totalReferrals Int      @default(0)
+  closedDeals    Int      @default(0)
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  leads Lead[]
+  deals Deal[]
+}
+
+model Lead {
+  id             String   @id @default(uuid())
+  fullName       String
+  email          String   @unique
+  phone          String?
+  country        String   @default("Israel")
+  city           String?
+  status         String   @default("New") // New, Contacted, Qualified, Matched, ClosedWon, ClosedLost
+  budget         String?  // e.g. "1.5M-2M NIS"
+  preferredArea  String?  // e.g. "Tel Aviv", "Herzliya"
+  rooms          String?  // e.g. "3-4"
+  propertyType   String?  // Apartment, Penthouse, Villa
+  readiness      String?  // Immediate, 3-6 months, 6-12 months, 12+ months
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  ambassadorId String?
+  ambassador   Ambassador? @relation(fields: [ambassadorId], references: [id])
+
+  deals Deal[]
+}
+
+model Developer {
+  id          String   @id @default(uuid())
+  companyName String
+  contactName String
+  email       String   @unique
+  phone       String?
+  buildAreas  String   // comma-separated areas: "Tel Aviv,Herzliya"
+  projectType String   // Apartment, Penthouse, Villa, Mixed
+  priceRange  String?  // e.g. "1M-3M NIS"
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  deals Deal[]
+}
+
+model Deal {
+  id        String   @id @default(uuid())
+  stage     String   @default("Negotiation") // Negotiation, Contract, ClosedWon, ClosedLost
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leadId       String
+  lead         Lead      @relation(fields: [leadId], references: [id])
+  developerId  String
+  developer    Developer @relation(fields: [developerId], references: [id])
+  ambassadorId String?
+  ambassador   Ambassador? @relation(fields: [ambassadorId], references: [id])
+}
