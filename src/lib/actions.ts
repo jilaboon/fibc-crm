@@ -208,7 +208,8 @@ export async function inviteUser(formData: FormData) {
     email,
     password: formData.get("password") as string,
     email_confirm: true,
-    user_metadata: { full_name: fullName },
+    user_metadata: { full_name: fullName, role: invitedRole },
+    app_metadata: { role: invitedRole },
   });
 
   if (error) throw new Error(error.message);
@@ -237,9 +238,16 @@ export async function updateUserRole(userId: string, newRole: string) {
   const { role } = await getAuthContext();
   if (role !== "ADMIN") throw new Error("רק מנהלים יכולים לשנות תפקידים");
 
-  await prisma.userProfile.update({
+  const profile = await prisma.userProfile.update({
     where: { id: userId },
     data: { role: newRole },
+  });
+
+  // Sync role to Supabase metadata so middleware can read it from JWT
+  const adminClient = createAdminClient();
+  await adminClient.auth.admin.updateUserById(profile.userId, {
+    user_metadata: { role: newRole },
+    app_metadata: { role: newRole },
   });
 
   revalidatePath("/settings/users");
