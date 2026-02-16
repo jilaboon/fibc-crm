@@ -36,14 +36,38 @@ export async function middleware(request: NextRequest) {
     (user.user_metadata?.role as string) ??
     null;
 
-  if (!role) {
+  // Check isActive — read from metadata, fall back to DB
+  let isActive: boolean | null =
+    user.app_metadata?.is_active as boolean | null ?? null;
+
+  if (!role || isActive === null) {
     const { data: profile } = await supabase
       .from("UserProfile")
-      .select("role")
+      .select("role, isActive")
       .eq("userId", user.id)
       .single();
 
-    role = profile?.role ?? null;
+    if (profile) {
+      role = role ?? profile.role;
+      isActive = profile.isActive;
+    }
+  }
+
+  // Block inactive users — sign them out and redirect to login
+  if (isActive === false) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("error", "inactive");
+    const response = NextResponse.redirect(url);
+    response.cookies.delete("sb-access-token");
+    response.cookies.delete("sb-refresh-token");
+    // Delete all supabase auth cookies
+    for (const cookie of request.cookies.getAll()) {
+      if (cookie.name.startsWith("sb-")) {
+        response.cookies.delete(cookie.name);
+      }
+    }
+    return response;
   }
 
   if (role) {

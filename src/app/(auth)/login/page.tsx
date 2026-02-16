@@ -26,6 +26,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
+  const isInactive = searchParams.get("error") === "inactive";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,6 +64,11 @@ function LoginForm() {
         <CardTitle className="text-2xl">התחברות ל-FIBC CRM</CardTitle>
       </CardHeader>
       <CardContent>
+        {isInactive && (
+          <div className="text-sm text-[#e2445c] text-center bg-red-50 rounded-md p-3 mb-2">
+            החשבון שלך הושבת. פנה למנהל המערכת.
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">אימייל</Label>

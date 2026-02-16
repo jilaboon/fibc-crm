@@ -270,9 +270,17 @@ export async function toggleUserActive(userId: string) {
   });
   if (!profile) throw new Error("User not found");
 
+  const newIsActive = !profile.isActive;
+
   await prisma.userProfile.update({
     where: { id: userId },
-    data: { isActive: !profile.isActive },
+    data: { isActive: newIsActive },
+  });
+
+  // Sync to Supabase metadata so middleware can check without DB query
+  const adminClient = createAdminClient();
+  await adminClient.auth.admin.updateUserById(profile.userId, {
+    app_metadata: { is_active: newIsActive },
   });
 
   revalidatePath("/settings/users");
