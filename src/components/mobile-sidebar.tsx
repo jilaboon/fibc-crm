@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { Menu } from "lucide-react";
+import { NavLink } from "@/components/nav-link";
 import {
   Sheet,
   SheetContent,
@@ -157,25 +157,23 @@ export function MobileSidebar({
           {/* Navigation */}
           <nav className="flex flex-col gap-0.5 px-3 flex-1">
             {navItems.map((item) => (
-              <Link
+              <NavLink
                 key={item.href}
                 href={item.href}
-                className="monday-nav-item min-h-[44px]"
-                onClick={() => setOpen(false)}
+                className="min-h-[44px]"
               >
                 {item.icon}
                 {item.label}
-              </Link>
+              </NavLink>
             ))}
             {isAdmin && (
-              <Link
+              <NavLink
                 href={adminNavItem.href}
-                className="monday-nav-item min-h-[44px] mt-4"
-                onClick={() => setOpen(false)}
+                className="min-h-[44px] mt-4"
               >
                 {adminNavItem.icon}
                 {adminNavItem.label}
-              </Link>
+              </NavLink>
             )}
           </nav>
 

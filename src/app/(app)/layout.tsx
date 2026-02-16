@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
@@ -6,6 +5,7 @@ import { redirect } from "next/navigation";
 import { LogoutButton } from "./logout-button";
 import { RefreshButton } from "@/components/refresh-button";
 import { MobileSidebar } from "@/components/mobile-sidebar";
+import { NavLink } from "@/components/nav-link";
 
 export default async function AppLayout({
   children,
@@ -60,7 +60,7 @@ export default async function AppLayout({
 
         {/* Navigation */}
         <nav className="flex flex-col gap-0.5 px-3 flex-1">
-          <Link href="/dashboard" className="monday-nav-item">
+          <NavLink href="/dashboard">
             <svg
               width="18"
               height="18"
@@ -77,8 +77,8 @@ export default async function AppLayout({
               <rect x="14" y="14" width="7" height="7" />
             </svg>
             לוח בקרה
-          </Link>
-          <Link href="/ambassadors" className="monday-nav-item">
+          </NavLink>
+          <NavLink href="/ambassadors">
             <svg
               width="18"
               height="18"
@@ -95,8 +95,8 @@ export default async function AppLayout({
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
             שגרירים
-          </Link>
-          <Link href="/leads" className="monday-nav-item">
+          </NavLink>
+          <NavLink href="/leads">
             <svg
               width="18"
               height="18"
@@ -113,8 +113,8 @@ export default async function AppLayout({
               <line x1="22" y1="11" x2="16" y2="11" />
             </svg>
             לידים
-          </Link>
-          <Link href="/developers" className="monday-nav-item">
+          </NavLink>
+          <NavLink href="/developers">
             <svg
               width="18"
               height="18"
@@ -130,9 +130,9 @@ export default async function AppLayout({
               <path d="M9 21V9" />
             </svg>
             יזמים
-          </Link>
+          </NavLink>
           {profile.role === "ADMIN" && (
-            <Link href="/settings/users" className="monday-nav-item mt-4">
+            <NavLink href="/settings/users" className="mt-4">
               <svg
                 width="18"
                 height="18"
@@ -147,7 +147,7 @@ export default async function AppLayout({
                 <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
               </svg>
               ניהול משתמשים
-            </Link>
+            </NavLink>
           )}
         </nav>
 

@@ -197,6 +197,10 @@
   background-color: #3b4065;
   color: #ffffff;
 }
+.monday-nav-item-active {
+  background-color: #3b4065;
+  color: #ffffff;
+}
 
 /* RTL select fix */
 select {
