@@ -5,7 +5,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   Cell,
@@ -42,15 +41,13 @@ export function LeadsByStatusChart({ data }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 120, left: 10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+      <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
         <XAxis type="number" allowDecimals={false} />
         <YAxis
           type="category"
           dataKey="name"
-          width={1}
-          tick={{ fontSize: 13, dx: 10 }}
-          orientation="right"
+          width={110}
+          tick={{ fontSize: 13 }}
           axisLine={false}
           tickLine={false}
         />
@@ -58,7 +55,7 @@ export function LeadsByStatusChart({ data }: Props) {
           formatter={(value) => [value, "כמות"]}
           contentStyle={{ direction: "rtl" }}
         />
-        <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+        <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={24}>
           {chartData.map((entry, index) => (
             <Cell key={index} fill={entry.color} />
           ))}

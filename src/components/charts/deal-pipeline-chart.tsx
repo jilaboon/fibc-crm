@@ -5,7 +5,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   Cell,
@@ -38,15 +37,14 @@ export function DealPipelineChart({ data }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={chartData} margin={{ top: 5, right: 40, left: 10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="name" tick={{ fontSize: 13 }} />
-        <YAxis allowDecimals={false} orientation="right" width={30} />
+      <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+        <XAxis dataKey="name" tick={{ fontSize: 13 }} axisLine={false} tickLine={false} />
+        <YAxis allowDecimals={false} axisLine={false} tickLine={false} />
         <Tooltip
           formatter={(value) => [value, "כמות"]}
           contentStyle={{ direction: "rtl" }}
         />
-        <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+        <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={50}>
           {chartData.map((entry, index) => (
             <Cell key={index} fill={entry.color} />
           ))}

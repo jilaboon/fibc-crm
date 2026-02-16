@@ -5,7 +5,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   Legend,
@@ -29,15 +28,13 @@ export function TopAmbassadorsChart({ data }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 100, left: 10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+      <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
         <XAxis type="number" allowDecimals={false} />
         <YAxis
           type="category"
           dataKey="name"
-          width={1}
-          tick={{ fontSize: 13, dx: 10 }}
-          orientation="right"
+          width={100}
+          tick={{ fontSize: 13 }}
           axisLine={false}
           tickLine={false}
         />
@@ -54,12 +51,14 @@ export function TopAmbassadorsChart({ data }: Props) {
           name="referrals"
           fill="#0073ea"
           radius={[0, 4, 4, 0]}
+          barSize={20}
         />
         <Bar
           dataKey="closed"
           name="closed"
           fill="#00c875"
           radius={[0, 4, 4, 0]}
+          barSize={20}
         />
       </BarChart>
     </ResponsiveContainer>
