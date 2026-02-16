@@ -180,6 +180,23 @@ export async function updateDealStage(dealId: string, stage: string) {
   }
 }
 
+export async function updateLeadStatus(leadId: string, status: string) {
+  await getAuthContext();
+
+  const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+  if (!lead) throw new Error("ליד לא נמצא");
+
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: { status },
+  });
+
+  revalidatePath(`/leads/${leadId}`);
+  revalidatePath("/leads");
+  revalidateTag("dashboard", { expire: 0 });
+  revalidatePath("/dashboard");
+}
+
 export async function getLeadSuggestions(leadId: string) {
   const lead = await prisma.lead.findUnique({ where: { id: leadId } });
   if (!lead || !lead.preferredArea) return [];

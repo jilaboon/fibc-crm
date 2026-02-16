@@ -3,12 +3,12 @@ import { getCachedAmbassadorList } from "@/lib/cached-queries";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { StatusBadge } from "@/components/status-badge";
 import Link from "next/link";
 import { AssignAmbassadorForm } from "./assign-ambassador-form";
 import { MatchDeveloperSection } from "./match-developer-section";
 import { DealSection } from "./deal-section";
 import { DeleteLeadButton } from "./delete-lead-button";
+import { LeadStatusSelect } from "./lead-status-select";
 
 export default async function LeadDetailPage({
   params,
@@ -67,7 +67,7 @@ export default async function LeadDetailPage({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <h2 className="text-3xl font-bold tracking-tight">{lead.fullName}</h2>
-          <StatusBadge status={lead.status} />
+          <LeadStatusSelect leadId={lead.id} currentStatus={lead.status} />
         </div>
         <DeleteLeadButton leadId={lead.id} leadName={lead.fullName} />
       </div>
