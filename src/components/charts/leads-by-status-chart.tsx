@@ -40,27 +40,29 @@ export function LeadsByStatusChart({ data }: Props) {
   }));
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-        <XAxis type="number" allowDecimals={false} />
-        <YAxis
-          type="category"
-          dataKey="name"
-          width={110}
-          tick={{ fontSize: 13 }}
-          axisLine={false}
-          tickLine={false}
-        />
-        <Tooltip
-          formatter={(value) => [value, "כמות"]}
-          contentStyle={{ direction: "rtl" }}
-        />
-        <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={24}>
-          {chartData.map((entry, index) => (
-            <Cell key={index} fill={entry.color} />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="flex items-stretch h-[300px]">
+      <div className="flex flex-col justify-around py-6 pl-4 text-sm text-[#323338] min-w-[100px] text-left">
+        {chartData.map((item, i) => (
+          <span key={i}>{item.name}</span>
+        ))}
+      </div>
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+            <XAxis type="number" allowDecimals={false} />
+            <YAxis type="category" dataKey="name" hide />
+            <Tooltip
+              formatter={(value) => [value, "כמות"]}
+              contentStyle={{ direction: "rtl" }}
+            />
+            <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={24}>
+              {chartData.map((entry, index) => (
+                <Cell key={index} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }
