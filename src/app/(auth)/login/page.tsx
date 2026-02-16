@@ -49,7 +49,7 @@ function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-xl">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
           <Image

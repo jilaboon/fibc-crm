@@ -4,8 +4,12 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f6f7fb]">
-      {children}
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/tel-aviv2.jpg')" }}
+    >
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="relative z-10">{children}</div>
     </div>
   );
 }
