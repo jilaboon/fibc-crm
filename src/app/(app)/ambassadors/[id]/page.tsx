@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/status-badge";
+import { DeleteAmbassadorButton } from "@/components/delete-ambassador-button";
 import Link from "next/link";
 
 export default async function AmbassadorDetailPage({
@@ -54,8 +55,15 @@ export default async function AmbassadorDetailPage({
         </Link>
       </div>
 
-      <div className="monday-group-header monday-group-blue text-2xl">
-        {ambassador.fullName}
+      <div className="flex items-center justify-between">
+        <div className="monday-group-header monday-group-blue text-2xl">
+          {ambassador.fullName}
+        </div>
+        <DeleteAmbassadorButton
+          ambassadorId={ambassador.id}
+          ambassadorName={ambassador.fullName}
+          leadsCount={ambassador.leads.length}
+        />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">

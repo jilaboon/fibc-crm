@@ -8,6 +8,7 @@ import Link from "next/link";
 import { AssignAmbassadorForm } from "./assign-ambassador-form";
 import { MatchDeveloperSection } from "./match-developer-section";
 import { DealSection } from "./deal-section";
+import { DeleteLeadButton } from "./delete-lead-button";
 
 export default async function LeadDetailPage({
   params,
@@ -63,9 +64,12 @@ export default async function LeadDetailPage({
         </Link>
       </div>
 
-      <div className="flex items-center gap-4">
-        <h2 className="text-3xl font-bold tracking-tight">{lead.fullName}</h2>
-        <StatusBadge status={lead.status} />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h2 className="text-3xl font-bold tracking-tight">{lead.fullName}</h2>
+          <StatusBadge status={lead.status} />
+        </div>
+        <DeleteLeadButton leadId={lead.id} leadName={lead.fullName} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">

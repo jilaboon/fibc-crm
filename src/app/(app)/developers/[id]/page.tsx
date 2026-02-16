@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/status-badge";
+import { DeleteDeveloperButton } from "./delete-developer-button";
 import Link from "next/link";
 
 export default async function DeveloperDetailPage({
@@ -48,8 +49,14 @@ export default async function DeveloperDetailPage({
         </Link>
       </div>
 
-      <div className="monday-group-header monday-group-purple text-2xl">
-        {developer.companyName}
+      <div className="flex items-center justify-between">
+        <div className="monday-group-header monday-group-purple text-2xl">
+          {developer.companyName}
+        </div>
+        <DeleteDeveloperButton
+          developerId={developer.id}
+          developerName={developer.companyName}
+        />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
