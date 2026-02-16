@@ -29,15 +29,17 @@ export function TopAmbassadorsChart({ data }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+      <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 100, left: 10, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" horizontal={false} />
         <XAxis type="number" allowDecimals={false} />
         <YAxis
           type="category"
           dataKey="name"
-          width={100}
-          tick={{ fontSize: 13 }}
+          width={1}
+          tick={{ fontSize: 13, dx: 10 }}
           orientation="right"
+          axisLine={false}
+          tickLine={false}
         />
         <Tooltip contentStyle={{ direction: "rtl" }} />
         <Legend

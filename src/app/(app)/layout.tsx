@@ -33,11 +33,11 @@ export default async function AppLayout({
             <Image
               src="/logo.png"
               alt="FIBC"
-              width={32}
-              height={32}
-              className="rounded-lg"
+              width={40}
+              height={40}
+              className="rounded-lg shrink-0"
             />
-            <span className="text-lg font-bold tracking-tight">FIBC CRM</span>
+            <span className="text-lg font-bold tracking-tight leading-tight">FIBC CRM</span>
           </div>
         </div>
 
