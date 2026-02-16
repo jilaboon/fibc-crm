@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { CopyButton } from "./portal/copy-button";
 import { PortalLogoutButton } from "./portal/logout-button";
+import { RefreshButton } from "@/components/refresh-button";
 
 export default async function PortalLayout({
   children,
@@ -138,7 +139,12 @@ export default async function PortalLayout({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto">
+        <div className="flex justify-end p-4 pb-0">
+          <RefreshButton />
+        </div>
+        <div className="px-8 pb-8">{children}</div>
+      </main>
     </div>
   );
 }

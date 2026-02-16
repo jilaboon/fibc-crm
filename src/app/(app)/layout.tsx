@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { LogoutButton } from "./logout-button";
+import { RefreshButton } from "@/components/refresh-button";
 
 export default async function AppLayout({
   children,
@@ -156,7 +157,12 @@ export default async function AppLayout({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto">
+        <div className="flex justify-end p-4 pb-0">
+          <RefreshButton />
+        </div>
+        <div className="px-8 pb-8">{children}</div>
+      </main>
     </div>
   );
 }
