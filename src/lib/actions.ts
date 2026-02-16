@@ -201,7 +201,6 @@ export async function inviteUser(formData: FormData) {
   const email = formData.get("email") as string;
   const fullName = formData.get("fullName") as string;
   const invitedRole = formData.get("role") as string;
-  const ambassadorId = formData.get("ambassadorId") as string | null;
 
   const adminClient = createAdminClient();
   const { data, error } = await adminClient.auth.admin.createUser({
@@ -223,15 +222,24 @@ export async function inviteUser(formData: FormData) {
     },
   });
 
-  // Link to ambassador record if AMBASSADOR role
-  if (invitedRole === "AMBASSADOR" && ambassadorId) {
-    await prisma.ambassador.update({
-      where: { id: ambassadorId },
-      data: { userProfileId: profile.id },
+  // Automatically create Ambassador record when role is AMBASSADOR
+  if (invitedRole === "AMBASSADOR") {
+    await prisma.ambassador.create({
+      data: {
+        fullName,
+        email,
+        country: (formData.get("country") as string) || "Israel",
+        city: (formData.get("city") as string) || "",
+        languages: (formData.get("languages") as string) || "עברית",
+        referralCode: generateReferralCode(fullName),
+        userProfileId: profile.id,
+      },
     });
   }
 
   revalidatePath("/settings/users");
+  revalidateTag("ambassadors", { expire: 0 });
+  revalidatePath("/ambassadors");
 }
 
 export async function updateUserRole(userId: string, newRole: string) {

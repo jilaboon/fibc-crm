@@ -15,17 +15,10 @@ export default async function UsersSettingsPage() {
   const { role, userId } = await getAuthContext();
   if (role !== "ADMIN") redirect("/dashboard");
 
-  const [users, ambassadors] = await Promise.all([
-    prisma.userProfile.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { ambassador: { select: { fullName: true } } },
-    }),
-    prisma.ambassador.findMany({
-      where: { userProfileId: null },
-      select: { id: true, fullName: true },
-      orderBy: { fullName: "asc" },
-    }),
-  ]);
+  const users = await prisma.userProfile.findMany({
+    orderBy: { createdAt: "desc" },
+    include: { ambassador: { select: { fullName: true } } },
+  });
 
   return (
     <div>
@@ -36,7 +29,7 @@ export default async function UsersSettingsPage() {
             הזמן משתמשים חדשים וניהול הרשאות
           </p>
         </div>
-        <InviteUserDialog ambassadors={ambassadors} />
+        <InviteUserDialog />
       </div>
 
       <div className="bg-white rounded-lg border border-[#e6e9ef]">

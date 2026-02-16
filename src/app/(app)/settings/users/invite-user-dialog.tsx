@@ -13,16 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-type Ambassador = {
-  id: string;
-  fullName: string;
-};
-
-export function InviteUserDialog({
-  ambassadors,
-}: {
-  ambassadors: Ambassador[];
-}) {
+export function InviteUserDialog() {
   const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState("AGENT");
   const [loading, setLoading] = useState(false);
@@ -74,22 +65,6 @@ export function InviteUserDialog({
               <option value="AMBASSADOR">שגריר</option>
             </select>
           </div>
-          {selectedRole === "AMBASSADOR" && ambassadors.length > 0 && (
-            <div className="space-y-2">
-              <Label>קישור לשגריר</Label>
-              <select
-                name="ambassadorId"
-                className="w-full border border-[#e6e9ef] rounded-md p-2 text-sm"
-              >
-                <option value="">— בחר שגריר —</option>
-                {ambassadors.map((amb) => (
-                  <option key={amb.id} value={amb.id}>
-                    {amb.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "יוצר..." : "צור משתמש"}
           </Button>
