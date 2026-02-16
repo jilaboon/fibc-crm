@@ -3,6 +3,7 @@ import { getAuthContext } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { InviteUserDialog } from "./invite-user-dialog";
+import { UserActions } from "./user-actions";
 
 const roleLabels: Record<string, string> = {
   ADMIN: "מנהל",
@@ -11,7 +12,7 @@ const roleLabels: Record<string, string> = {
 };
 
 export default async function UsersSettingsPage() {
-  const { role } = await getAuthContext();
+  const { role, userId } = await getAuthContext();
   if (role !== "ADMIN") redirect("/dashboard");
 
   const [users, ambassadors] = await Promise.all([
@@ -48,6 +49,7 @@ export default async function UsersSettingsPage() {
               <th className="text-right p-3 px-4">שגריר מקושר</th>
               <th className="text-right p-3 px-4">סטטוס</th>
               <th className="text-right p-3 px-4">תאריך יצירה</th>
+              <th className="text-right p-3 px-4">פעולות</th>
             </tr>
           </thead>
           <tbody>
@@ -85,6 +87,14 @@ export default async function UsersSettingsPage() {
                 </td>
                 <td className="p-3 px-4 text-sm text-[#676879]">
                   {new Date(user.createdAt).toLocaleDateString("he-IL")}
+                </td>
+                <td className="p-3 px-4">
+                  <UserActions
+                    userId={user.id}
+                    currentRole={user.role}
+                    isActive={user.isActive}
+                    isSelf={user.userId === userId}
+                  />
                 </td>
               </tr>
             ))}
