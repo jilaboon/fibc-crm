@@ -42,10 +42,16 @@ export function LeadsByStatusChart({ data }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={chartData} layout="vertical" margin={{ right: 20, left: 20 }}>
+      <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" horizontal={false} />
         <XAxis type="number" allowDecimals={false} />
-        <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 13 }} />
+        <YAxis
+          type="category"
+          dataKey="name"
+          width={100}
+          tick={{ fontSize: 13, direction: "rtl" }}
+          orientation="right"
+        />
         <Tooltip
           formatter={(value) => [value, "כמות"]}
           contentStyle={{ direction: "rtl" }}

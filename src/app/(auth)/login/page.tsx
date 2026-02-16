@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
 
 export default function LoginPage() {
   return (
@@ -51,9 +52,13 @@ function LoginForm() {
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
-          <div className="w-12 h-12 rounded-xl bg-[#0073ea] flex items-center justify-center text-white font-bold text-xl">
-            F
-          </div>
+          <Image
+            src="/logo.png"
+            alt="FIBC"
+            width={48}
+            height={48}
+            className="rounded-xl"
+          />
         </div>
         <CardTitle className="text-2xl">התחברות ל-FIBC CRM</CardTitle>
       </CardHeader>

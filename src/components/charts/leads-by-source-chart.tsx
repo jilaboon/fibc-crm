@@ -29,13 +29,22 @@ export function LeadsBySourceChart({ data }: Props) {
         <Pie
           data={chartData}
           cx="50%"
-          cy="50%"
-          innerRadius={60}
-          outerRadius={100}
+          cy="45%"
+          innerRadius={55}
+          outerRadius={90}
           dataKey="value"
-          label={({ name, percent }) =>
-            `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`
-          }
+          label={({ name, percent, x, y, textAnchor }) => (
+            <text
+              x={x}
+              y={y}
+              textAnchor={textAnchor}
+              dominantBaseline="central"
+              fontSize={13}
+              fill="#323338"
+            >
+              {`${name} (${((percent ?? 0) * 100).toFixed(0)}%)`}
+            </text>
+          )}
           labelLine={true}
         >
           {chartData.map((entry, index) => (

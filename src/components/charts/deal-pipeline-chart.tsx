@@ -38,10 +38,10 @@ export function DealPipelineChart({ data }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={chartData} margin={{ right: 20, left: 20 }}>
+      <BarChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis dataKey="name" tick={{ fontSize: 13 }} />
-        <YAxis allowDecimals={false} />
+        <YAxis allowDecimals={false} orientation="right" />
         <Tooltip
           formatter={(value) => [value, "כמות"]}
           contentStyle={{ direction: "rtl" }}

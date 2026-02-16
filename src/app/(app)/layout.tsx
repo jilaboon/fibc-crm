@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -29,9 +30,13 @@ export default async function AppLayout({
         {/* Logo area */}
         <div className="p-5 pb-2">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#0073ea] flex items-center justify-center text-white font-bold text-sm">
-              F
-            </div>
+            <Image
+              src="/logo.png"
+              alt="FIBC"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
             <span className="text-lg font-bold tracking-tight">FIBC CRM</span>
           </div>
         </div>
