@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthContext } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -20,16 +20,7 @@ const stageLabels: Record<string, string> = {
 };
 
 export default async function PortalDealsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const profile = await prisma.userProfile.findUnique({
-    where: { userId: user.id },
-  });
-  if (!profile) redirect("/login");
+  const { profile } = await getAuthContext();
 
   const ambassador = await prisma.ambassador.findUnique({
     where: { userProfileId: profile.id },
@@ -38,9 +29,13 @@ export default async function PortalDealsPage() {
 
   const deals = await prisma.deal.findMany({
     where: { ambassadorId: ambassador.id },
-    include: {
-      lead: true,
-      developer: true,
+    take: 50,
+    select: {
+      id: true,
+      stage: true,
+      updatedAt: true,
+      lead: { select: { fullName: true } },
+      developer: { select: { companyName: true } },
     },
     orderBy: { updatedAt: "desc" },
   });

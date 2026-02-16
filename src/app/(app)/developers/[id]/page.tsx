@@ -25,11 +25,15 @@ export default async function DeveloperDetailPage({
     where: { id },
     include: {
       deals: {
-        include: {
-          lead: true,
-          ambassador: true,
-        },
+        take: 50,
         orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          stage: true,
+          notes: true,
+          lead: { select: { id: true, fullName: true } },
+          ambassador: { select: { fullName: true } },
+        },
       },
     },
   });

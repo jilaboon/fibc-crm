@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { ReferralForm } from "./referral-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+export const revalidate = 300; // Cache for 5 minutes
+
 export default async function ReferralPage({
   params,
 }: {

@@ -26,6 +26,15 @@ export default async function AmbassadorDetailPage({
     include: {
       leads: {
         orderBy: { createdAt: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          fullName: true,
+          status: true,
+          budget: true,
+          preferredArea: true,
+          readiness: true,
+        },
       },
     },
   });

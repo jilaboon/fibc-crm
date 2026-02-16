@@ -1,5 +1,5 @@
 import { getAuthContext } from "@/lib/auth";
-import { getDashboardAnalytics } from "@/lib/analytics";
+import { getCachedDashboardAnalytics, getCachedAmbassadorList } from "@/lib/cached-queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -16,18 +16,15 @@ import { LeadsByStatusChart } from "@/components/charts/leads-by-status-chart";
 import { LeadsBySourceChart } from "@/components/charts/leads-by-source-chart";
 import { DealPipelineChart } from "@/components/charts/deal-pipeline-chart";
 import { TopAmbassadorsChart } from "@/components/charts/top-ambassadors-chart";
-import { prisma } from "@/lib/db";
 import Link from "next/link";
 
 export default async function DashboardPage() {
   await getAuthContext();
 
-  const analytics = await getDashboardAnalytics();
-
-  const ambassadors = await prisma.ambassador.findMany({
-    select: { id: true, fullName: true },
-    orderBy: { fullName: "asc" },
-  });
+  const [analytics, ambassadors] = await Promise.all([
+    getCachedDashboardAnalytics(),
+    getCachedAmbassadorList(),
+  ]);
 
   return (
     <div dir="rtl" className="space-y-8">

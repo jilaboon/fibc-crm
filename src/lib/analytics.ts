@@ -29,7 +29,15 @@ export async function getDashboardAnalytics() {
     prisma.lead.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
-      include: { ambassador: { select: { fullName: true } } },
+      select: {
+        id: true,
+        fullName: true,
+        status: true,
+        budget: true,
+        preferredArea: true,
+        createdAt: true,
+        ambassador: { select: { fullName: true } },
+      },
     }),
   ]);
 

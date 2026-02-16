@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { getCachedAmbassadorList } from "@/lib/cached-queries";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -15,26 +16,34 @@ export default async function LeadDetailPage({
 }) {
   const { id } = await params;
 
-  const lead = await prisma.lead.findUnique({
-    where: { id },
-    include: {
-      ambassador: true,
-      deals: {
-        include: { developer: true, ambassador: true },
+  const [lead, ambassadors, developers] = await Promise.all([
+    prisma.lead.findUnique({
+      where: { id },
+      include: {
+        ambassador: true,
+        deals: {
+          include: {
+            developer: { select: { companyName: true, contactName: true } },
+            ambassador: { select: { fullName: true } },
+          },
+        },
       },
-    },
-  });
+    }),
+    getCachedAmbassadorList(),
+    prisma.developer.findMany({
+      select: {
+        id: true,
+        companyName: true,
+        contactName: true,
+        buildAreas: true,
+        projectType: true,
+        priceRange: true,
+      },
+      orderBy: { companyName: "asc" },
+    }),
+  ]);
 
   if (!lead) notFound();
-
-  const ambassadors = await prisma.ambassador.findMany({
-    select: { id: true, fullName: true },
-    orderBy: { fullName: "asc" },
-  });
-
-  const developers = await prisma.developer.findMany({
-    orderBy: { companyName: "asc" },
-  });
 
   // Get matching suggestions
   const suggestions = lead.preferredArea

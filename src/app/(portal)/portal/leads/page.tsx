@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthContext } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -13,16 +13,7 @@ import {
 import { StatusBadge } from "@/components/status-badge";
 
 export default async function PortalLeadsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const profile = await prisma.userProfile.findUnique({
-    where: { userId: user.id },
-  });
-  if (!profile) redirect("/login");
+  const { profile } = await getAuthContext();
 
   const ambassador = await prisma.ambassador.findUnique({
     where: { userProfileId: profile.id },
@@ -32,6 +23,17 @@ export default async function PortalLeadsPage() {
   const leads = await prisma.lead.findMany({
     where: { ambassadorId: ambassador.id },
     orderBy: { createdAt: "desc" },
+    take: 50,
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      phone: true,
+      status: true,
+      budget: true,
+      preferredArea: true,
+      createdAt: true,
+    },
   });
 
   return (

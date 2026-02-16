@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -12,7 +13,7 @@ export type AuthContext = {
   };
 };
 
-export async function getAuthContext(): Promise<AuthContext> {
+export const getAuthContext = cache(async (): Promise<AuthContext> => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -35,4 +36,4 @@ export async function getAuthContext(): Promise<AuthContext> {
       email: profile.email,
     },
   };
-}
+});

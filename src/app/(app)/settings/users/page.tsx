@@ -14,15 +14,17 @@ export default async function UsersSettingsPage() {
   const { role } = await getAuthContext();
   if (role !== "ADMIN") redirect("/dashboard");
 
-  const users = await prisma.userProfile.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { ambassador: true },
-  });
-
-  const ambassadors = await prisma.ambassador.findMany({
-    where: { userProfileId: null },
-    orderBy: { fullName: "asc" },
-  });
+  const [users, ambassadors] = await Promise.all([
+    prisma.userProfile.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { ambassador: { select: { fullName: true } } },
+    }),
+    prisma.ambassador.findMany({
+      where: { userProfileId: null },
+      select: { id: true, fullName: true },
+      orderBy: { fullName: "asc" },
+    }),
+  ]);
 
   return (
     <div>

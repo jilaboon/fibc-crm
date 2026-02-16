@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { getAuthContext } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 function generateReferralCode(name: string): string {
   const slug = name
@@ -31,7 +31,9 @@ export async function createAmbassador(formData: FormData) {
     },
   });
   revalidatePath("/ambassadors");
+  revalidateTag("ambassadors", { expire: 0 });
   revalidatePath("/dashboard");
+  revalidateTag("dashboard", { expire: 0 });
   return ambassador;
 }
 
@@ -66,7 +68,9 @@ export async function createLead(formData: FormData) {
   }
 
   revalidatePath("/leads");
+  revalidateTag("dashboard", { expire: 0 });
   revalidatePath("/dashboard");
+  revalidateTag("ambassadors", { expire: 0 });
   revalidatePath("/ambassadors");
   return lead;
 }
@@ -93,7 +97,9 @@ export async function assignAmbassador(leadId: string, ambassadorId: string) {
 
   revalidatePath(`/leads/${leadId}`);
   revalidatePath("/leads");
+  revalidateTag("ambassadors", { expire: 0 });
   revalidatePath("/ambassadors");
+  revalidateTag("dashboard", { expire: 0 });
   revalidatePath("/dashboard");
 }
 
@@ -126,7 +132,9 @@ export async function matchToDeveloper(leadId: string, developerId: string) {
 
   revalidatePath(`/leads/${leadId}`);
   revalidatePath("/leads");
+  revalidateTag("dashboard", { expire: 0 });
   revalidatePath("/dashboard");
+  revalidateTag("developers", { expire: 0 });
 }
 
 export async function updateDealStage(dealId: string, stage: string) {
@@ -163,8 +171,13 @@ export async function updateDealStage(dealId: string, stage: string) {
 
   revalidatePath(`/leads/${deal.leadId}`);
   revalidatePath("/leads");
+  revalidateTag("dashboard", { expire: 0 });
   revalidatePath("/dashboard");
+  revalidateTag("ambassadors", { expire: 0 });
   revalidatePath("/ambassadors");
+  if (stage === "ClosedWon" || stage === "ClosedLost") {
+    revalidateTag("developers", { expire: 0 });
+  }
 }
 
 export async function getLeadSuggestions(leadId: string) {
@@ -284,6 +297,8 @@ export async function submitReferral(formData: FormData) {
   });
 
   revalidatePath("/leads");
+  revalidateTag("dashboard", { expire: 0 });
   revalidatePath("/dashboard");
+  revalidateTag("ambassadors", { expire: 0 });
   return { success: true, leadId: lead.id };
 }

@@ -15,7 +15,16 @@ import Link from "next/link";
 export default async function AmbassadorsPage() {
   const ambassadors = await prisma.ambassador.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { leads: true } } },
+    select: {
+      id: true,
+      fullName: true,
+      country: true,
+      city: true,
+      languages: true,
+      hostsEvents: true,
+      totalReferrals: true,
+      closedDeals: true,
+    },
   });
 
   return (

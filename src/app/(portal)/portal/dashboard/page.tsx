@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthContext } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -14,16 +14,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { CopyButton } from "../copy-button";
 
 export default async function PortalDashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const profile = await prisma.userProfile.findUnique({
-    where: { userId: user.id },
-  });
-  if (!profile) redirect("/login");
+  const { profile } = await getAuthContext();
 
   const ambassador = await prisma.ambassador.findUnique({
     where: { userProfileId: profile.id },
@@ -33,12 +24,8 @@ export default async function PortalDashboardPage() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  const [leads, deals, leadsThisMonth] = await Promise.all([
-    prisma.lead.findMany({
-      where: { ambassadorId: ambassador.id },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.deal.findMany({
+  const [totalReferrals, leadsThisMonth, activeDeals, closedDeals, recentLeads] = await Promise.all([
+    prisma.lead.count({
       where: { ambassadorId: ambassador.id },
     }),
     prisma.lead.count({
@@ -47,14 +34,32 @@ export default async function PortalDashboardPage() {
         createdAt: { gte: startOfMonth },
       },
     }),
+    prisma.deal.count({
+      where: {
+        ambassadorId: ambassador.id,
+        stage: { in: ["Negotiation", "Contract"] },
+      },
+    }),
+    prisma.deal.count({
+      where: {
+        ambassadorId: ambassador.id,
+        stage: "ClosedWon",
+      },
+    }),
+    prisma.lead.findMany({
+      where: { ambassadorId: ambassador.id },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        fullName: true,
+        status: true,
+        budget: true,
+        preferredArea: true,
+        createdAt: true,
+      },
+    }),
   ]);
-
-  const totalReferrals = leads.length;
-  const activeDeals = deals.filter(
-    (d) => d.stage === "Negotiation" || d.stage === "Contract"
-  ).length;
-  const closedDeals = deals.filter((d) => d.stage === "ClosedWon").length;
-  const recentLeads = leads.slice(0, 5);
 
   const referralLink = ambassador.referralCode
     ? `${process.env.NEXT_PUBLIC_SITE_URL || ""}/r/${ambassador.referralCode}`

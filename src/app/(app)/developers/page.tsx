@@ -14,7 +14,16 @@ import Link from "next/link";
 export default async function DevelopersPage() {
   const developers = await prisma.developer.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { deals: true } } },
+    select: {
+      id: true,
+      companyName: true,
+      contactName: true,
+      email: true,
+      buildAreas: true,
+      projectType: true,
+      priceRange: true,
+      _count: { select: { deals: true } },
+    },
   });
 
   return (

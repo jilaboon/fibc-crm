@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { getCachedAmbassadorList } from "@/lib/cached-queries";
 import {
   Table,
   TableBody,
@@ -13,15 +14,25 @@ import { NewLeadDialog } from "@/components/new-lead-dialog";
 import Link from "next/link";
 
 export default async function LeadsPage() {
-  const leads = await prisma.lead.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { ambassador: true },
-  });
-
-  const ambassadors = await prisma.ambassador.findMany({
-    select: { id: true, fullName: true },
-    orderBy: { fullName: "asc" },
-  });
+  const [leads, ambassadors] = await Promise.all([
+    prisma.lead.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        status: true,
+        budget: true,
+        preferredArea: true,
+        rooms: true,
+        readiness: true,
+        createdAt: true,
+        ambassador: { select: { fullName: true } },
+      },
+    }),
+    getCachedAmbassadorList(),
+  ]);
 
   return (
     <div className="space-y-6" dir="rtl">
