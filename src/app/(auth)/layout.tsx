@@ -9,7 +9,7 @@ export default function AuthLayout({
       style={{ backgroundImage: "url('/tel-aviv2.jpg')" }}
     >
       <div className="absolute inset-0 bg-black/40" />
-      <div className="relative z-10">{children}</div>
+      <div className="relative z-10 w-full px-4 sm:px-0 sm:w-auto">{children}</div>
     </div>
   );
 }

@@ -49,7 +49,7 @@ export function LeadsBySourceChart({ data }: Props) {
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex gap-6 text-sm text-[#323338]">
+      <div className="flex gap-3 sm:gap-6 text-sm text-[#323338]">
         {chartData.map((item, i) => (
           <div key={i} className="flex items-center gap-2">
             <span

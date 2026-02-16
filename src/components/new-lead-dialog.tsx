@@ -53,7 +53,7 @@ export function NewLeadDialog({
             <Label htmlFor="phone">טלפון</Label>
             <Input id="phone" name="phone" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="country">מדינה</Label>
               <Input id="country" name="country" defaultValue="Israel" />
@@ -63,7 +63,7 @@ export function NewLeadDialog({
               <Input id="city" name="city" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="budget">תקציב</Label>
               <Input id="budget" name="budget" placeholder="1.5M-2M NIS" />
@@ -73,7 +73,7 @@ export function NewLeadDialog({
               <Input id="preferredArea" name="preferredArea" placeholder="תל אביב" />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="rooms">חדרים</Label>
               <Input id="rooms" name="rooms" placeholder="3-4" />

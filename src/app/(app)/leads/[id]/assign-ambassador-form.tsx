@@ -22,7 +22,7 @@ export function AssignAmbassadorForm({
           await assignAmbassador(leadId, ambassadorId);
         }
       }}
-      className="flex gap-2 items-end"
+      className="flex flex-col sm:flex-row gap-2 sm:items-end"
     >
       <div className="flex-1">
         <select

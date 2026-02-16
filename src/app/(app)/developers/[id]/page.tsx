@@ -130,42 +130,74 @@ export default async function DeveloperDetailPage({
           </div>
         </CardHeader>
         <CardContent>
-          <Table className="monday-table">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">ליד</TableHead>
-                <TableHead className="text-right">שלב</TableHead>
-                <TableHead className="text-right">שגריר</TableHead>
-                <TableHead className="text-right">הערות</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {developer.deals.map((deal) => (
-                <TableRow key={deal.id}>
-                  <TableCell>
-                    <Link
-                      href={`/leads/${deal.lead.id}`}
-                      className="font-medium hover:underline text-[#0073ea]"
-                    >
-                      {deal.lead.fullName}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={deal.stage} />
-                  </TableCell>
-                  <TableCell>{deal.ambassador?.fullName || "—"}</TableCell>
-                  <TableCell>{deal.notes || "—"}</TableCell>
-                </TableRow>
-              ))}
-              {developer.deals.length === 0 && (
+          <div className="hidden md:block">
+            <Table className="monday-table">
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                    אין עסקאות עדיין.
-                  </TableCell>
+                  <TableHead className="text-right">ליד</TableHead>
+                  <TableHead className="text-right">שלב</TableHead>
+                  <TableHead className="text-right">שגריר</TableHead>
+                  <TableHead className="text-right">הערות</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {developer.deals.map((deal) => (
+                  <TableRow key={deal.id}>
+                    <TableCell>
+                      <Link
+                        href={`/leads/${deal.lead.id}`}
+                        className="font-medium hover:underline text-[#0073ea]"
+                      >
+                        {deal.lead.fullName}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={deal.stage} />
+                    </TableCell>
+                    <TableCell>{deal.ambassador?.fullName || "—"}</TableCell>
+                    <TableCell>{deal.notes || "—"}</TableCell>
+                  </TableRow>
+                ))}
+                {developer.deals.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                      אין עסקאות עדיין.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="md:hidden space-y-3">
+            {developer.deals.map((deal) => (
+              <div key={deal.id} className="bg-white rounded-lg border border-[#e6e9ef] p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Link
+                    href={`/leads/${deal.lead.id}`}
+                    className="font-bold text-[#0073ea] hover:underline"
+                  >
+                    {deal.lead.fullName}
+                  </Link>
+                  <StatusBadge status={deal.stage} />
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">שגריר</span>
+                  <span className="text-[#323338]">{deal.ambassador?.fullName || "—"}</span>
+                </div>
+                {deal.notes && (
+                  <div className="text-sm">
+                    <span className="text-[#676879]">הערות: </span>
+                    <span className="text-[#323338]">{deal.notes}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+            {developer.deals.length === 0 && (
+              <div className="text-center text-muted-foreground py-8">
+                אין עסקאות עדיין.
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

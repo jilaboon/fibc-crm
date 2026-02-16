@@ -129,44 +129,78 @@ export default async function AmbassadorDetailPage({
           </div>
         </CardHeader>
         <CardContent>
-          <Table className="monday-table">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">שם</TableHead>
-                <TableHead className="text-right">סטטוס</TableHead>
-                <TableHead className="text-right">תקציב</TableHead>
-                <TableHead className="text-right">אזור</TableHead>
-                <TableHead className="text-right">מוכנות</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {ambassador.leads.map((lead) => (
-                <TableRow key={lead.id}>
-                  <TableCell>
-                    <Link
-                      href={`/leads/${lead.id}`}
-                      className="font-medium hover:underline text-[#0073ea]"
-                    >
-                      {lead.fullName}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={lead.status} />
-                  </TableCell>
-                  <TableCell>{lead.budget || "—"}</TableCell>
-                  <TableCell>{lead.preferredArea || "—"}</TableCell>
-                  <TableCell>{lead.readiness || "—"}</TableCell>
-                </TableRow>
-              ))}
-              {ambassador.leads.length === 0 && (
+          <div className="hidden md:block">
+            <Table className="monday-table">
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    אין לידים שהופנו עדיין.
-                  </TableCell>
+                  <TableHead className="text-right">שם</TableHead>
+                  <TableHead className="text-right">סטטוס</TableHead>
+                  <TableHead className="text-right">תקציב</TableHead>
+                  <TableHead className="text-right">אזור</TableHead>
+                  <TableHead className="text-right">מוכנות</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {ambassador.leads.map((lead) => (
+                  <TableRow key={lead.id}>
+                    <TableCell>
+                      <Link
+                        href={`/leads/${lead.id}`}
+                        className="font-medium hover:underline text-[#0073ea]"
+                      >
+                        {lead.fullName}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={lead.status} />
+                    </TableCell>
+                    <TableCell>{lead.budget || "—"}</TableCell>
+                    <TableCell>{lead.preferredArea || "—"}</TableCell>
+                    <TableCell>{lead.readiness || "—"}</TableCell>
+                  </TableRow>
+                ))}
+                {ambassador.leads.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                      אין לידים שהופנו עדיין.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="md:hidden space-y-3">
+            {ambassador.leads.map((lead) => (
+              <div key={lead.id} className="bg-white rounded-lg border border-[#e6e9ef] p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Link
+                    href={`/leads/${lead.id}`}
+                    className="font-bold text-[#0073ea] hover:underline"
+                  >
+                    {lead.fullName}
+                  </Link>
+                  <StatusBadge status={lead.status} />
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">תקציב</span>
+                  <span className="text-[#323338]">{lead.budget || "—"}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">אזור</span>
+                  <span className="text-[#323338]">{lead.preferredArea || "—"}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">מוכנות</span>
+                  <span className="text-[#323338]">{lead.readiness || "—"}</span>
+                </div>
+              </div>
+            ))}
+            {ambassador.leads.length === 0 && (
+              <div className="text-center text-muted-foreground py-8">
+                אין לידים שהופנו עדיין.
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

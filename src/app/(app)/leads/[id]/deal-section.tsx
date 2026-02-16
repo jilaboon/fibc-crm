@@ -59,7 +59,7 @@ export function DealSection({ deal }: { deal: Deal }) {
       </div>
 
       {!isTerminal && (
-        <div className="flex gap-2 pt-2">
+        <div className="flex flex-wrap gap-2 pt-2">
           {deal.stage === "Negotiation" && (
             <form
               action={async () => {

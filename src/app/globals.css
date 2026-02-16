@@ -172,6 +172,14 @@
 .monday-stat-card:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
+@media (max-width: 639px) {
+  .monday-stat-card {
+    padding: 14px;
+  }
+  .monday-stat-card .text-2xl {
+    font-size: 1.25rem;
+  }
+}
 
 /* Monday.com sidebar nav */
 .monday-nav-item {

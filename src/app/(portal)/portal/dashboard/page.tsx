@@ -70,7 +70,7 @@ export default async function PortalDashboardPage() {
       <h2 className="text-3xl font-bold tracking-tight">לוח בקרה</h2>
 
       {/* Stat cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div
           className="monday-stat-card"
           style={{ borderTop: "3px solid #0073ea" }}
@@ -113,12 +113,12 @@ export default async function PortalDashboardPage() {
       {referralLink && (
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between gap-4">
-              <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="min-w-0">
                 <div className="text-sm font-medium text-[#676879] mb-1">
                   קישור ההפניה שלך
                 </div>
-                <div className="text-sm font-mono bg-[#f6f7fb] rounded px-3 py-2 border border-[#e6e9ef]">
+                <div className="text-sm font-mono bg-[#f6f7fb] rounded px-3 py-2 border border-[#e6e9ef] truncate">
                   {referralLink}
                 </div>
               </div>
@@ -141,34 +141,60 @@ export default async function PortalDashboardPage() {
               עדיין אין לידים. שתף את קישור ההפניה שלך כדי להתחיל!
             </div>
           ) : (
-            <Table className="monday-table">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">שם</TableHead>
-                  <TableHead className="text-right">סטטוס</TableHead>
-                  <TableHead className="text-right">תקציב</TableHead>
-                  <TableHead className="text-right">אזור מועדף</TableHead>
-                  <TableHead className="text-right">תאריך</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              <div className="hidden md:block">
+                <Table className="monday-table">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-right">שם</TableHead>
+                      <TableHead className="text-right">סטטוס</TableHead>
+                      <TableHead className="text-right">תקציב</TableHead>
+                      <TableHead className="text-right">אזור מועדף</TableHead>
+                      <TableHead className="text-right">תאריך</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentLeads.map((lead) => (
+                      <TableRow key={lead.id}>
+                        <TableCell className="font-medium">
+                          {lead.fullName}
+                        </TableCell>
+                        <TableCell>
+                          <StatusBadge status={lead.status} />
+                        </TableCell>
+                        <TableCell>{lead.budget || "---"}</TableCell>
+                        <TableCell>{lead.preferredArea || "---"}</TableCell>
+                        <TableCell>
+                          {lead.createdAt.toLocaleDateString("he-IL")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="md:hidden space-y-3">
                 {recentLeads.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell className="font-medium">
-                      {lead.fullName}
-                    </TableCell>
-                    <TableCell>
+                  <div key={lead.id} className="bg-white rounded-lg border border-[#e6e9ef] p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-[#323338]">{lead.fullName}</span>
                       <StatusBadge status={lead.status} />
-                    </TableCell>
-                    <TableCell>{lead.budget || "---"}</TableCell>
-                    <TableCell>{lead.preferredArea || "---"}</TableCell>
-                    <TableCell>
-                      {lead.createdAt.toLocaleDateString("he-IL")}
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">תקציב</span>
+                      <span className="text-[#323338]">{lead.budget || "---"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">אזור מועדף</span>
+                      <span className="text-[#323338]">{lead.preferredArea || "---"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">תאריך</span>
+                      <span className="text-[#323338]">{lead.createdAt.toLocaleDateString("he-IL")}</span>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

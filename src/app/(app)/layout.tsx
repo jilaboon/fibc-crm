@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { LogoutButton } from "./logout-button";
 import { RefreshButton } from "@/components/refresh-button";
+import { MobileSidebar } from "@/components/mobile-sidebar";
 
 export default async function AppLayout({
   children,
@@ -25,9 +26,17 @@ export default async function AppLayout({
   if (!profile) redirect("/login");
 
   return (
-    <div className="flex min-h-screen">
-      {/* Monday.com-style Sidebar */}
-      <aside className="w-[260px] bg-[#292f4c] text-white flex flex-col sticky top-0 h-screen">
+    <div className="flex flex-col md:flex-row min-h-screen">
+      {/* Mobile top bar + sidebar */}
+      <MobileSidebar
+        profileName={profile.fullName}
+        profileRole={profile.role}
+        isAdmin={profile.role === "ADMIN"}
+        logoutButton={<LogoutButton />}
+      />
+
+      {/* Desktop sidebar - hidden on mobile */}
+      <aside className="hidden md:flex w-[260px] bg-[#292f4c] text-white flex-col sticky top-0 h-screen">
         {/* Logo area */}
         <div className="p-5 pb-2">
           <div className="flex items-center gap-3">
@@ -158,10 +167,10 @@ export default async function AppLayout({
 
       {/* Main content */}
       <main className="flex-1 overflow-auto">
-        <div className="flex justify-end p-4 pb-0">
+        <div className="hidden md:flex justify-end p-4 pb-0">
           <RefreshButton />
         </div>
-        <div className="px-8 pb-8">{children}</div>
+        <div className="px-4 pb-4 md:px-8 md:pb-8">{children}</div>
       </main>
     </div>
   );

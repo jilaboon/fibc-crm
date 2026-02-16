@@ -41,7 +41,7 @@ export function LeadsByStatusChart({ data }: Props) {
 
   return (
     <div className="flex items-stretch h-[300px]">
-      <div className="flex flex-col justify-around py-6 pl-4 text-sm text-[#323338] min-w-[100px] text-left">
+      <div className="flex flex-col justify-around py-6 pl-4 text-sm text-[#323338] min-w-[60px] sm:min-w-[100px] text-left">
         {chartData.map((item, i) => (
           <span key={i}>{item.name}</span>
         ))}

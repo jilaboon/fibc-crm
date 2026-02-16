@@ -52,38 +52,72 @@ export default async function PortalLeadsPage() {
               עדיין אין לידים. שתף את קישור ההפניה שלך כדי להתחיל!
             </div>
           ) : (
-            <Table className="monday-table">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">שם</TableHead>
-                  <TableHead className="text-right">אימייל</TableHead>
-                  <TableHead className="text-right">טלפון</TableHead>
-                  <TableHead className="text-right">סטטוס</TableHead>
-                  <TableHead className="text-right">תקציב</TableHead>
-                  <TableHead className="text-right">אזור מועדף</TableHead>
-                  <TableHead className="text-right">תאריך</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              <div className="hidden md:block">
+                <Table className="monday-table">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-right">שם</TableHead>
+                      <TableHead className="text-right">אימייל</TableHead>
+                      <TableHead className="text-right">טלפון</TableHead>
+                      <TableHead className="text-right">סטטוס</TableHead>
+                      <TableHead className="text-right">תקציב</TableHead>
+                      <TableHead className="text-right">אזור מועדף</TableHead>
+                      <TableHead className="text-right">תאריך</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {leads.map((lead) => (
+                      <TableRow key={lead.id}>
+                        <TableCell className="font-medium">
+                          {lead.fullName}
+                        </TableCell>
+                        <TableCell>{lead.email}</TableCell>
+                        <TableCell>{lead.phone || "---"}</TableCell>
+                        <TableCell>
+                          <StatusBadge status={lead.status} />
+                        </TableCell>
+                        <TableCell>{lead.budget || "---"}</TableCell>
+                        <TableCell>{lead.preferredArea || "---"}</TableCell>
+                        <TableCell>
+                          {lead.createdAt.toLocaleDateString("he-IL")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="md:hidden space-y-3">
                 {leads.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell className="font-medium">
-                      {lead.fullName}
-                    </TableCell>
-                    <TableCell>{lead.email}</TableCell>
-                    <TableCell>{lead.phone || "---"}</TableCell>
-                    <TableCell>
+                  <div key={lead.id} className="bg-white rounded-lg border border-[#e6e9ef] p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-[#323338]">{lead.fullName}</span>
                       <StatusBadge status={lead.status} />
-                    </TableCell>
-                    <TableCell>{lead.budget || "---"}</TableCell>
-                    <TableCell>{lead.preferredArea || "---"}</TableCell>
-                    <TableCell>
-                      {lead.createdAt.toLocaleDateString("he-IL")}
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">אימייל</span>
+                      <span className="text-[#323338]">{lead.email}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">טלפון</span>
+                      <span className="text-[#323338]">{lead.phone || "---"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">תקציב</span>
+                      <span className="text-[#323338]">{lead.budget || "---"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">אזור מועדף</span>
+                      <span className="text-[#323338]">{lead.preferredArea || "---"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">תאריך</span>
+                      <span className="text-[#323338]">{lead.createdAt.toLocaleDateString("he-IL")}</span>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

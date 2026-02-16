@@ -38,64 +38,119 @@ export default async function AmbassadorsPage() {
 
       <Card className="border-[#e6e9ef] bg-white">
         <CardContent className="pt-6">
-          <Table className="monday-table">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">שם</TableHead>
-                <TableHead className="text-right">מדינה / עיר</TableHead>
-                <TableHead className="text-right">שפות</TableHead>
-                <TableHead className="text-right">מארח אירועים</TableHead>
-                <TableHead className="text-right">הפניות</TableHead>
-                <TableHead className="text-right">נסגרו</TableHead>
-                <TableHead className="text-right">המרה</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {ambassadors.map((amb) => (
-                <TableRow key={amb.id}>
-                  <TableCell>
-                    <Link
-                      href={`/ambassadors/${amb.id}`}
-                      className="font-medium hover:underline text-[#0073ea]"
-                    >
-                      {amb.fullName}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {amb.country} / {amb.city}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1 flex-wrap">
-                      {amb.languages.split(",").map((lang) => (
-                        <Badge key={lang} variant="outline" className="text-xs">
-                          {lang.trim()}
-                        </Badge>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell>{amb.hostsEvents ? "כן" : "לא"}</TableCell>
-                  <TableCell>
-                    {amb.totalReferrals}
-                  </TableCell>
-                  <TableCell>
-                    {amb.closedDeals}
-                  </TableCell>
-                  <TableCell>
+          <div className="hidden md:block">
+            <Table className="monday-table">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-right">שם</TableHead>
+                  <TableHead className="text-right">מדינה / עיר</TableHead>
+                  <TableHead className="text-right">שפות</TableHead>
+                  <TableHead className="text-right">מארח אירועים</TableHead>
+                  <TableHead className="text-right">הפניות</TableHead>
+                  <TableHead className="text-right">נסגרו</TableHead>
+                  <TableHead className="text-right">המרה</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ambassadors.map((amb) => (
+                  <TableRow key={amb.id}>
+                    <TableCell>
+                      <Link
+                        href={`/ambassadors/${amb.id}`}
+                        className="font-medium hover:underline text-[#0073ea]"
+                      >
+                        {amb.fullName}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      {amb.country} / {amb.city}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1 flex-wrap">
+                        {amb.languages.split(",").map((lang) => (
+                          <Badge key={lang} variant="outline" className="text-xs">
+                            {lang.trim()}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>{amb.hostsEvents ? "כן" : "לא"}</TableCell>
+                    <TableCell>
+                      {amb.totalReferrals}
+                    </TableCell>
+                    <TableCell>
+                      {amb.closedDeals}
+                    </TableCell>
+                    <TableCell>
+                      {amb.totalReferrals > 0
+                        ? `${Math.round((amb.closedDeals / amb.totalReferrals) * 100)}%`
+                        : "0%"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {ambassadors.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                      אין שגרירים עדיין. צור שגריר חדש כדי להתחיל.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="md:hidden space-y-3">
+            {ambassadors.map((amb) => (
+              <div key={amb.id} className="bg-white rounded-lg border border-[#e6e9ef] p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Link
+                    href={`/ambassadors/${amb.id}`}
+                    className="font-bold text-[#0073ea] hover:underline"
+                  >
+                    {amb.fullName}
+                  </Link>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">מיקום</span>
+                  <span className="text-[#323338]">{amb.country} / {amb.city}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-[#676879]">שפות</span>
+                  <div className="flex gap-1 flex-wrap">
+                    {amb.languages.split(",").map((lang) => (
+                      <Badge key={lang} variant="outline" className="text-xs">
+                        {lang.trim()}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">מארח אירועים</span>
+                  <span className="text-[#323338]">{amb.hostsEvents ? "כן" : "לא"}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">הפניות</span>
+                  <span className="text-[#323338]">{amb.totalReferrals}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">נסגרו</span>
+                  <span className="text-[#323338]">{amb.closedDeals}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">המרה</span>
+                  <span className="text-[#323338]">
                     {amb.totalReferrals > 0
                       ? `${Math.round((amb.closedDeals / amb.totalReferrals) * 100)}%`
                       : "0%"}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {ambassadors.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                    אין שגרירים עדיין. צור שגריר חדש כדי להתחיל.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                  </span>
+                </div>
+              </div>
+            ))}
+            {ambassadors.length === 0 && (
+              <div className="text-center text-muted-foreground py-8">
+                אין שגרירים עדיין. צור שגריר חדש כדי להתחיל.
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

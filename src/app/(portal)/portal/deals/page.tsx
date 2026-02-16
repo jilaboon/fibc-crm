@@ -56,32 +56,54 @@ export default async function PortalDealsPage() {
               עדיין אין עסקאות.
             </div>
           ) : (
-            <Table className="monday-table">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">ליד</TableHead>
-                  <TableHead className="text-right">יזם</TableHead>
-                  <TableHead className="text-right">שלב</TableHead>
-                  <TableHead className="text-right">תאריך עדכון</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              <div className="hidden md:block">
+                <Table className="monday-table">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-right">ליד</TableHead>
+                      <TableHead className="text-right">יזם</TableHead>
+                      <TableHead className="text-right">שלב</TableHead>
+                      <TableHead className="text-right">תאריך עדכון</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {deals.map((deal) => (
+                      <TableRow key={deal.id}>
+                        <TableCell className="font-medium">
+                          {deal.lead.fullName}
+                        </TableCell>
+                        <TableCell>{deal.developer.companyName}</TableCell>
+                        <TableCell>
+                          <StatusBadge status={deal.stage} />
+                        </TableCell>
+                        <TableCell>
+                          {deal.updatedAt.toLocaleDateString("he-IL")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="md:hidden space-y-3">
                 {deals.map((deal) => (
-                  <TableRow key={deal.id}>
-                    <TableCell className="font-medium">
-                      {deal.lead.fullName}
-                    </TableCell>
-                    <TableCell>{deal.developer.companyName}</TableCell>
-                    <TableCell>
+                  <div key={deal.id} className="bg-white rounded-lg border border-[#e6e9ef] p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-[#323338]">{deal.lead.fullName}</span>
                       <StatusBadge status={deal.stage} />
-                    </TableCell>
-                    <TableCell>
-                      {deal.updatedAt.toLocaleDateString("he-IL")}
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">יזם</span>
+                      <span className="text-[#323338]">{deal.developer.companyName}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#676879]">תאריך עדכון</span>
+                      <span className="text-[#323338]">{deal.updatedAt.toLocaleDateString("he-IL")}</span>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

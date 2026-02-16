@@ -35,7 +35,7 @@ export function MatchDeveloperSection({
           {suggestions.map((dev) => (
             <div
               key={dev.id}
-              className="flex items-center justify-between rounded-lg border border-[#e6e9ef] p-3 hover:shadow-sm transition-shadow bg-white"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-[#e6e9ef] p-3 hover:shadow-sm transition-shadow bg-white"
             >
               <div>
                 <p className="font-medium text-[#323338]">{dev.companyName}</p>
@@ -74,7 +74,7 @@ export function MatchDeveloperSection({
               await matchToDeveloper(leadId, developerId);
             }
           }}
-          className="flex gap-2 items-end"
+          className="flex flex-col sm:flex-row gap-2 sm:items-end"
         >
           <div className="flex-1">
             <select

@@ -28,7 +28,7 @@ export default async function DashboardPage() {
 
   return (
     <div dir="rtl" className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">לוח בקרה</h2>
         <div className="flex gap-2">
           <NewLeadDialog ambassadors={ambassadors} />
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* כרטיסי סטטיסטיקה */}
-      <div className="grid gap-4 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
         <div className="monday-stat-card" style={{ borderTop: "3px solid #0073ea" }}>
           <div className="text-sm font-medium text-[#676879] mb-1">שגרירים</div>
           <div className="text-2xl font-bold">{analytics.totalAmbassadors}</div>
@@ -106,39 +106,68 @@ export default async function DashboardPage() {
           <div className="monday-group-header monday-group-green">לידים אחרונים</div>
         </CardHeader>
         <CardContent>
-          <Table className="monday-table">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">שם</TableHead>
-                <TableHead className="text-right">סטטוס</TableHead>
-                <TableHead className="text-right">שגריר</TableHead>
-                <TableHead className="text-right">תקציב</TableHead>
-                <TableHead className="text-right">אזור</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {analytics.recentLeads.map((lead) => (
-                <TableRow key={lead.id}>
-                  <TableCell>
-                    <Link
-                      href={`/leads/${lead.id}`}
-                      className="font-medium hover:underline"
-                    >
-                      {lead.fullName}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={lead.status} />
-                  </TableCell>
-                  <TableCell>
-                    {lead.ambassador?.fullName || "\u2014"}
-                  </TableCell>
-                  <TableCell>{lead.budget || "\u2014"}</TableCell>
-                  <TableCell>{lead.preferredArea || "\u2014"}</TableCell>
+          <div className="hidden md:block">
+            <Table className="monday-table">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-right">שם</TableHead>
+                  <TableHead className="text-right">סטטוס</TableHead>
+                  <TableHead className="text-right">שגריר</TableHead>
+                  <TableHead className="text-right">תקציב</TableHead>
+                  <TableHead className="text-right">אזור</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {analytics.recentLeads.map((lead) => (
+                  <TableRow key={lead.id}>
+                    <TableCell>
+                      <Link
+                        href={`/leads/${lead.id}`}
+                        className="font-medium hover:underline"
+                      >
+                        {lead.fullName}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={lead.status} />
+                    </TableCell>
+                    <TableCell>
+                      {lead.ambassador?.fullName || "\u2014"}
+                    </TableCell>
+                    <TableCell>{lead.budget || "\u2014"}</TableCell>
+                    <TableCell>{lead.preferredArea || "\u2014"}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="md:hidden space-y-3">
+            {analytics.recentLeads.map((lead) => (
+              <div key={lead.id} className="bg-white rounded-lg border border-[#e6e9ef] p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Link
+                    href={`/leads/${lead.id}`}
+                    className="font-bold text-[#323338] hover:underline"
+                  >
+                    {lead.fullName}
+                  </Link>
+                  <StatusBadge status={lead.status} />
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">שגריר</span>
+                  <span className="text-[#323338]">{lead.ambassador?.fullName || "\u2014"}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">תקציב</span>
+                  <span className="text-[#323338]">{lead.budget || "\u2014"}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#676879]">אזור</span>
+                  <span className="text-[#323338]">{lead.preferredArea || "\u2014"}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     </div>

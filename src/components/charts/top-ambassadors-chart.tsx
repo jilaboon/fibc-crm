@@ -28,7 +28,7 @@ export function TopAmbassadorsChart({ data }: Props) {
 
   return (
     <div className="flex items-stretch h-[300px]">
-      <div className="flex flex-col justify-around pt-6 pb-[75px] pl-4 text-sm text-[#323338] min-w-[100px] text-left">
+      <div className="flex flex-col justify-around pt-6 pb-[75px] pl-4 text-sm text-[#323338] min-w-[60px] sm:min-w-[100px] text-left">
         {chartData.map((item, i) => (
           <span key={i}>{item.name}</span>
         ))}
