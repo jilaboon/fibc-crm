@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useOptimistic } from "react";
 import { useRouter } from "next/navigation";
 import { updateLeadStatus } from "@/lib/actions";
 
@@ -21,13 +21,15 @@ export function LeadStatusSelect({
   currentStatus: string;
 }) {
   const [loading, setLoading] = useState(false);
+  const [optimisticStatus, setOptimisticStatus] = useOptimistic(currentStatus);
   const router = useRouter();
-  const current = statuses.find((s) => s.value === currentStatus);
+  const current = statuses.find((s) => s.value === optimisticStatus);
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const newStatus = e.target.value;
-    if (newStatus === currentStatus) return;
+    if (newStatus === optimisticStatus) return;
     setLoading(true);
+    setOptimisticStatus(newStatus);
     try {
       await updateLeadStatus(leadId, newStatus);
       router.refresh();
@@ -40,7 +42,7 @@ export function LeadStatusSelect({
 
   return (
     <select
-      value={currentStatus}
+      value={optimisticStatus}
       onChange={handleChange}
       disabled={loading}
       style={{ backgroundColor: current?.bg || "#579bfc" }}
@@ -48,7 +50,7 @@ export function LeadStatusSelect({
     >
       {statuses.map((s) => (
         <option key={s.value} value={s.value}>
-          {loading && s.value === currentStatus ? "מעדכן..." : s.label}
+          {s.label}
         </option>
       ))}
     </select>
