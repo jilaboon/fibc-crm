@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -24,9 +25,27 @@ export function NewLeadDialog({
   ambassadors: Ambassador[];
 }) {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true);
+    try {
+      const formData = new FormData(e.currentTarget);
+      await createLead(formData);
+      setOpen(false);
+      router.refresh();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "שגיאה ביצירת ליד");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => !loading && setOpen(v)}>
       <DialogTrigger asChild>
         <Button>ליד חדש</Button>
       </DialogTrigger>
@@ -34,98 +53,96 @@ export function NewLeadDialog({
         <DialogHeader>
           <DialogTitle>יצירת ליד</DialogTitle>
         </DialogHeader>
-        <form
-          action={async (formData) => {
-            await createLead(formData);
-            setOpen(false);
-          }}
-          className="grid gap-4"
-        >
-          <div className="grid gap-2">
-            <Label htmlFor="fullName">שם מלא</Label>
-            <Input id="fullName" name="fullName" required />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="email">אימייל</Label>
-            <Input id="email" name="email" type="email" required />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="phone">טלפון</Label>
-            <Input id="phone" name="phone" />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit}>
+          <fieldset disabled={loading} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="country">מדינה</Label>
-              <Input id="country" name="country" defaultValue="Israel" />
+              <Label htmlFor="fullName">שם מלא</Label>
+              <Input id="fullName" name="fullName" required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="city">עיר</Label>
-              <Input id="city" name="city" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="budget">תקציב</Label>
-              <Input id="budget" name="budget" placeholder="1.5M-2M NIS" />
+              <Label htmlFor="email">אימייל</Label>
+              <Input id="email" name="email" type="email" required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="preferredArea">אזור מועדף</Label>
-              <Input id="preferredArea" name="preferredArea" placeholder="תל אביב" />
+              <Label htmlFor="phone">טלפון</Label>
+              <Input id="phone" name="phone" />
             </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="rooms">חדרים</Label>
-              <Input id="rooms" name="rooms" placeholder="3-4" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="country">מדינה</Label>
+                <Input id="country" name="country" defaultValue="Israel" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="city">עיר</Label>
+                <Input id="city" name="city" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="budget">תקציב</Label>
+                <Input id="budget" name="budget" placeholder="1.5M-2M NIS" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="preferredArea">אזור מועדף</Label>
+                <Input id="preferredArea" name="preferredArea" placeholder="תל אביב" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="rooms">חדרים</Label>
+                <Input id="rooms" name="rooms" placeholder="3-4" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="propertyType">סוג נכס</Label>
+                <select
+                  id="propertyType"
+                  name="propertyType"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                >
+                  <option value="">בחר...</option>
+                  <option value="Apartment">דירה</option>
+                  <option value="Penthouse">פנטהאוז</option>
+                  <option value="Villa">וילה</option>
+                </select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="readiness">מוכנות</Label>
+                <select
+                  id="readiness"
+                  name="readiness"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                >
+                  <option value="">בחר...</option>
+                  <option value="Immediate">מיידית</option>
+                  <option value="3-6 months">3-6 חודשים</option>
+                  <option value="6-12 months">6-12 חודשים</option>
+                  <option value="12+ months">+12 חודשים</option>
+                </select>
+              </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="propertyType">סוג נכס</Label>
+              <Label htmlFor="ambassadorId">שגריר</Label>
               <select
-                id="propertyType"
-                name="propertyType"
+                id="ambassadorId"
+                name="ambassadorId"
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
               >
-                <option value="">בחר...</option>
-                <option value="Apartment">דירה</option>
-                <option value="Penthouse">פנטהאוז</option>
-                <option value="Villa">וילה</option>
+                <option value="">ללא שגריר</option>
+                {ambassadors.map((amb) => (
+                  <option key={amb.id} value={amb.id}>
+                    {amb.fullName}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="readiness">מוכנות</Label>
-              <select
-                id="readiness"
-                name="readiness"
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-              >
-                <option value="">בחר...</option>
-                <option value="Immediate">מיידית</option>
-                <option value="3-6 months">3-6 חודשים</option>
-                <option value="6-12 months">6-12 חודשים</option>
-                <option value="12+ months">+12 חודשים</option>
-              </select>
+              <Label htmlFor="notes">הערות</Label>
+              <Input id="notes" name="notes" />
             </div>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="ambassadorId">שגריר</Label>
-            <select
-              id="ambassadorId"
-              name="ambassadorId"
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-            >
-              <option value="">ללא שגריר</option>
-              {ambassadors.map((amb) => (
-                <option key={amb.id} value={amb.id}>
-                  {amb.fullName}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="notes">הערות</Label>
-            <Input id="notes" name="notes" />
-          </div>
-          <Button type="submit">יצירת ליד</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "יוצר ליד..." : "יצירת ליד"}
+            </Button>
+          </fieldset>
         </form>
       </DialogContent>
     </Dialog>

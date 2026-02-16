@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/status-badge";
@@ -19,7 +21,22 @@ interface Deal {
 }
 
 export function DealSection({ deal }: { deal: Deal }) {
+  const [loading, setLoading] = useState<string | null>(null);
+  const router = useRouter();
   const isTerminal = deal.stage === "ClosedWon" || deal.stage === "ClosedLost";
+  const isLoading = loading !== null;
+
+  async function handleStageChange(stage: string) {
+    setLoading(stage);
+    try {
+      await updateDealStage(deal.id, stage);
+      router.refresh();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "שגיאה בעדכון שלב");
+    } finally {
+      setLoading(null);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -61,48 +78,33 @@ export function DealSection({ deal }: { deal: Deal }) {
       {!isTerminal && (
         <div className="flex flex-wrap gap-2 pt-2">
           {deal.stage === "Negotiation" && (
-            <form
-              action={async () => {
-                await updateDealStage(deal.id, "Contract");
-              }}
+            <Button
+              size="sm"
+              disabled={isLoading}
+              onClick={() => handleStageChange("Contract")}
+              className="bg-[#0073ea] hover:bg-[#0060c2] text-white"
             >
-              <Button
-                type="submit"
-                size="sm"
-                className="bg-[#0073ea] hover:bg-[#0060c2] text-white"
-              >
-                העבר לחוזה
-              </Button>
-            </form>
+              {loading === "Contract" ? "מעדכן..." : "העבר לחוזה"}
+            </Button>
           )}
           {(deal.stage === "Negotiation" || deal.stage === "Contract") && (
             <>
-              <form
-                action={async () => {
-                  await updateDealStage(deal.id, "ClosedWon");
-                }}
+              <Button
+                size="sm"
+                disabled={isLoading}
+                onClick={() => handleStageChange("ClosedWon")}
+                className="bg-[#00c875] hover:bg-[#00a85e] text-white"
               >
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="bg-[#00c875] hover:bg-[#00a85e] text-white"
-                >
-                  נסגר בהצלחה
-                </Button>
-              </form>
-              <form
-                action={async () => {
-                  await updateDealStage(deal.id, "ClosedLost");
-                }}
+                {loading === "ClosedWon" ? "מעדכן..." : "נסגר בהצלחה"}
+              </Button>
+              <Button
+                size="sm"
+                disabled={isLoading}
+                onClick={() => handleStageChange("ClosedLost")}
+                className="bg-[#e2445c] hover:bg-[#c93a4e] text-white"
               >
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="bg-[#e2445c] hover:bg-[#c93a4e] text-white"
-                >
-                  נסגר ללא הצלחה
-                </Button>
-              </form>
+                {loading === "ClosedLost" ? "מעדכן..." : "נסגר ללא הצלחה"}
+              </Button>
             </>
           )}
         </div>

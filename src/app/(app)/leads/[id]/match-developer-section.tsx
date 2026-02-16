@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { matchToDeveloper } from "@/lib/actions";
 
@@ -25,6 +26,31 @@ export function MatchDeveloperSection({
   suggestions,
   allDevelopers,
 }: Props) {
+  const [loading, setLoading] = useState<string | null>(null);
+  const router = useRouter();
+
+  async function handleMatch(developerId: string) {
+    setLoading(developerId);
+    try {
+      await matchToDeveloper(leadId, developerId);
+      router.refresh();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "שגיאה בהתאמה");
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  async function handleSelectMatch(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const developerId = formData.get("developerId") as string;
+    if (!developerId) return;
+    await handleMatch(developerId);
+  }
+
+  const isLoading = loading !== null;
+
   return (
     <div className="space-y-4">
       {suggestions.length > 0 && (
@@ -44,19 +70,14 @@ export function MatchDeveloperSection({
                   {dev.priceRange ? ` \u00B7 ${dev.priceRange}` : ""}
                 </p>
               </div>
-              <form
-                action={async () => {
-                  await matchToDeveloper(leadId, dev.id);
-                }}
+              <Button
+                size="sm"
+                disabled={isLoading}
+                onClick={() => handleMatch(dev.id)}
+                className="bg-[#0073ea] hover:bg-[#0060c2] text-white"
               >
-                <Button
-                  size="sm"
-                  type="submit"
-                  className="bg-[#0073ea] hover:bg-[#0060c2] text-white"
-                >
-                  התאם
-                </Button>
-              </form>
+                {loading === dev.id ? "מתאים..." : "התאם"}
+              </Button>
             </div>
           ))}
           <Separator />
@@ -68,17 +89,13 @@ export function MatchDeveloperSection({
           או בחר יזם:
         </p>
         <form
-          action={async (formData) => {
-            const developerId = formData.get("developerId") as string;
-            if (developerId) {
-              await matchToDeveloper(leadId, developerId);
-            }
-          }}
+          onSubmit={handleSelectMatch}
           className="flex flex-col sm:flex-row gap-2 sm:items-end"
         >
           <div className="flex-1">
             <select
               name="developerId"
+              disabled={isLoading}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
             >
               <option value="">בחר יזם...</option>
@@ -92,9 +109,10 @@ export function MatchDeveloperSection({
           <Button
             type="submit"
             size="sm"
+            disabled={isLoading}
             className="bg-[#0073ea] hover:bg-[#0060c2] text-white"
           >
-            התאם
+            {loading === "select" ? "מתאים..." : "התאם"}
           </Button>
         </form>
       </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { assignAmbassador } from "@/lib/actions";
 
@@ -14,20 +16,32 @@ export function AssignAmbassadorForm({
   currentAmbassadorId,
   ambassadors,
 }: Props) {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const ambassadorId = formData.get("ambassadorId") as string;
+    if (!ambassadorId) return;
+    setLoading(true);
+    try {
+      await assignAmbassador(leadId, ambassadorId);
+      router.refresh();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "שגיאה בשיוך שגריר");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <form
-      action={async (formData) => {
-        const ambassadorId = formData.get("ambassadorId") as string;
-        if (ambassadorId) {
-          await assignAmbassador(leadId, ambassadorId);
-        }
-      }}
-      className="flex flex-col sm:flex-row gap-2 sm:items-end"
-    >
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 sm:items-end">
       <div className="flex-1">
         <select
           name="ambassadorId"
           defaultValue={currentAmbassadorId || ""}
+          disabled={loading}
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
         >
           <option value="">בחר שגריר...</option>
@@ -41,9 +55,10 @@ export function AssignAmbassadorForm({
       <Button
         type="submit"
         size="sm"
+        disabled={loading}
         className="bg-[#0073ea] hover:bg-[#0060c2] text-white"
       >
-        שייך
+        {loading ? "משייך..." : "שייך"}
       </Button>
     </form>
   );
