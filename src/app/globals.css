@@ -118,12 +118,12 @@
 }
 .monday-status-new { background-color: #579bfc; }
 .monday-status-contacted { background-color: #fdab3d; }
-.monday-status-qualified { background-color: #a25ddc; }
-.monday-status-matched { background-color: #0073ea; }
-.monday-status-closedwon { background-color: #00c875; }
-.monday-status-closedlost { background-color: #e2445c; }
-.monday-status-negotiation { background-color: #fdab3d; }
-.monday-status-contract { background-color: #a25ddc; }
+.monday-status-meeting1 { background-color: #a25ddc; }
+.monday-status-meeting2 { background-color: #9b59b6; }
+.monday-status-negotiation { background-color: #0073ea; }
+.monday-status-registration { background-color: #00c875; }
+.monday-status-contract { background-color: #00a85e; }
+.monday-status-notrelevant { background-color: #e2445c; }
 
 /* Monday.com table rows */
 .monday-table tr {

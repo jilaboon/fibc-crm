@@ -11,8 +11,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
+import { DateRangeFilter } from "@/components/date-range-filter";
+import { Prisma } from "@prisma/client";
+import { Suspense } from "react";
 
-export default async function PortalLeadsPage() {
+export default async function PortalLeadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { profile } = await getAuthContext();
 
   const ambassador = await prisma.ambassador.findUnique({
@@ -20,8 +27,19 @@ export default async function PortalLeadsPage() {
   });
   if (!ambassador) redirect("/login");
 
+  const params = await searchParams;
+  const from = typeof params.from === "string" ? params.from : undefined;
+  const to = typeof params.to === "string" ? params.to : undefined;
+
+  const where: Prisma.LeadWhereInput = { ambassadorId: ambassador.id };
+  if (from || to) {
+    where.createdAt = {};
+    if (from) where.createdAt.gte = new Date(from);
+    if (to) where.createdAt.lte = new Date(to + "T23:59:59.999Z");
+  }
+
   const leads = await prisma.lead.findMany({
-    where: { ambassadorId: ambassador.id },
+    where,
     orderBy: { createdAt: "desc" },
     take: 50,
     select: {
@@ -39,6 +57,10 @@ export default async function PortalLeadsPage() {
   return (
     <div dir="rtl" className="space-y-8">
       <h2 className="text-3xl font-bold tracking-tight">הלידים שלי</h2>
+
+      <Suspense>
+        <DateRangeFilter />
+      </Suspense>
 
       <Card>
         <CardHeader>

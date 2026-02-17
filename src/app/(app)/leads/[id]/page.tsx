@@ -9,6 +9,9 @@ import { MatchDeveloperSection } from "./match-developer-section";
 import { DealSection } from "./deal-section";
 import { DeleteLeadButton } from "./delete-lead-button";
 import { LeadStatusSelect } from "./lead-status-select";
+import { DealTypeSelect } from "./deal-type-select";
+import { LeadTasks } from "./lead-tasks";
+import { LeadNotes } from "./lead-notes";
 
 export default async function LeadDetailPage({
   params,
@@ -27,6 +30,12 @@ export default async function LeadDetailPage({
             developer: { select: { companyName: true, contactName: true } },
             ambassador: { select: { fullName: true } },
           },
+        },
+        tasks: {
+          orderBy: [{ completed: "asc" }, { dueDate: "asc" }],
+        },
+        leadNotes: {
+          orderBy: { createdAt: "desc" },
         },
       },
     }),
@@ -74,67 +83,87 @@ export default async function LeadDetailPage({
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Lead Profile */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="border-b border-[#e6e9ef]">
-            <CardTitle className="monday-group-header monday-group-blue">פרופיל ליד</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-6">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">אימייל</span>
-              <span>{lead.email}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">טלפון</span>
-              <span dir="ltr">{lead.phone || "—"}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">מיקום</span>
-              <span>
-                {lead.city ? `${lead.city}, ` : ""}
-                {lead.country}
-              </span>
-            </div>
-            <Separator />
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">תקציב</span>
-              <span>{lead.budget || "—"}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">אזור מועדף</span>
-              <span>{lead.preferredArea || "—"}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">חדרים</span>
-              <span>{lead.rooms || "—"}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">סוג נכס</span>
-              <span>{lead.propertyType || "—"}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">מוכנות</span>
-              <span>{lead.readiness || "—"}</span>
-            </div>
-            {lead.notes && (
-              <>
-                <Separator />
-                <div>
-                  <span className="text-muted-foreground">הערות</span>
-                  <p className="mt-1">{lead.notes}</p>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Ambassador Assignment */}
         <div className="space-y-6">
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="border-b border-[#e6e9ef]">
+              <CardTitle className="monday-group-header monday-group-blue">פרופיל ליד</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-6">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">אימייל</span>
+                <span>{lead.email}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">טלפון</span>
+                <span dir="ltr">{lead.phone || "\u2014"}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">מיקום</span>
+                <span>
+                  {lead.city ? `${lead.city}, ` : ""}
+                  {lead.country}
+                </span>
+              </div>
+              <Separator />
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">סוג עסקה</span>
+                <div className="w-[160px]">
+                  <DealTypeSelect leadId={lead.id} currentDealType={lead.dealType} />
+                </div>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">תקציב</span>
+                <span>{lead.budget || "\u2014"}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">אזור מועדף</span>
+                <span>{lead.preferredArea || "\u2014"}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">חדרים</span>
+                <span>{lead.rooms || "\u2014"}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">סוג נכס</span>
+                <span>{lead.propertyType || "\u2014"}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">מוכנות</span>
+                <span>{lead.readiness || "\u2014"}</span>
+              </div>
+              {lead.notes && (
+                <>
+                  <Separator />
+                  <div>
+                    <span className="text-muted-foreground">הערות</span>
+                    <p className="mt-1">{lead.notes}</p>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Tasks Section */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="border-b border-[#e6e9ef]">
+              <CardTitle className="monday-group-header monday-group-orange">משימות</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <LeadTasks leadId={lead.id} tasks={lead.tasks} />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Ambassador Assignment */}
           <Card className="border-0 shadow-sm">
             <CardHeader className="border-b border-[#e6e9ef]">
               <CardTitle className="monday-group-header monday-group-purple">שגריר</CardTitle>
@@ -148,11 +177,11 @@ export default async function LeadDetailPage({
             </CardContent>
           </Card>
 
-          {/* Developer Matching */}
+          {/* Project Matching */}
           {!activeDeal && (
             <Card className="border-0 shadow-sm">
               <CardHeader className="border-b border-[#e6e9ef]">
-                <CardTitle className="monday-group-header monday-group-orange">התאמה ליזם</CardTitle>
+                <CardTitle className="monday-group-header monday-group-orange">התאמה לפרויקט</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
                 <MatchDeveloperSection
@@ -175,6 +204,16 @@ export default async function LeadDetailPage({
               </CardContent>
             </Card>
           )}
+
+          {/* Notes Section */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="border-b border-[#e6e9ef]">
+              <CardTitle className="monday-group-header monday-group-green">הערות</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <LeadNotes leadId={lead.id} notes={lead.leadNotes} />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { getAuthContext } from "@/lib/auth";
-import { getCachedDashboardAnalytics, getCachedAmbassadorList } from "@/lib/cached-queries";
+import { getCachedAmbassadorList } from "@/lib/cached-queries";
+import { prisma } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -16,13 +17,95 @@ import { LeadsByStatusChart } from "@/components/charts/leads-by-status-chart";
 import { LeadsBySourceChart } from "@/components/charts/leads-by-source-chart";
 import { DealPipelineChart } from "@/components/charts/deal-pipeline-chart";
 import { TopAmbassadorsChart } from "@/components/charts/top-ambassadors-chart";
+import { DateRangeFilter } from "@/components/date-range-filter";
+import { Prisma } from "@prisma/client";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function DashboardPage() {
+async function getDashboardAnalytics(dateFilter?: { gte?: Date; lte?: Date }) {
+  const leadWhere: Prisma.LeadWhereInput = {};
+  const dealWhere: Prisma.DealWhereInput = {};
+
+  if (dateFilter) {
+    leadWhere.createdAt = dateFilter;
+    dealWhere.createdAt = dateFilter;
+  }
+
+  const [
+    leadsByStatus,
+    leadsBySource,
+    dealsByStage,
+    topAmbassadors,
+    totalLeads,
+    totalAmbassadors,
+    totalDevelopers,
+    closedWonDeals,
+    activeDeals,
+    recentLeads,
+  ] = await Promise.all([
+    prisma.lead.groupBy({ by: ["status"], _count: true, where: leadWhere }),
+    prisma.lead.groupBy({ by: ["source"], _count: true, where: leadWhere }),
+    prisma.deal.groupBy({ by: ["stage"], _count: true, where: dealWhere }),
+    prisma.ambassador.findMany({
+      orderBy: { closedDeals: "desc" },
+      take: 5,
+      select: { id: true, fullName: true, totalReferrals: true, closedDeals: true },
+    }),
+    prisma.lead.count({ where: leadWhere }),
+    prisma.ambassador.count(),
+    prisma.developer.count(),
+    prisma.deal.count({ where: { ...dealWhere, stage: "ClosedWon" } }),
+    prisma.deal.count({ where: { ...dealWhere, stage: { in: ["Negotiation", "Contract"] } } }),
+    prisma.lead.findMany({
+      where: leadWhere,
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      select: {
+        id: true,
+        fullName: true,
+        status: true,
+        budget: true,
+        preferredArea: true,
+        createdAt: true,
+        ambassador: { select: { fullName: true } },
+      },
+    }),
+  ]);
+
+  return {
+    leadsByStatus,
+    leadsBySource,
+    dealsByStage,
+    topAmbassadors,
+    totalLeads,
+    totalAmbassadors,
+    totalDevelopers,
+    closedWonDeals,
+    activeDeals,
+    recentLeads,
+  };
+}
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   await getAuthContext();
 
+  const params = await searchParams;
+  const from = typeof params.from === "string" ? params.from : undefined;
+  const to = typeof params.to === "string" ? params.to : undefined;
+
+  let dateFilter: { gte?: Date; lte?: Date } | undefined;
+  if (from || to) {
+    dateFilter = {};
+    if (from) dateFilter.gte = new Date(from);
+    if (to) dateFilter.lte = new Date(to + "T23:59:59.999Z");
+  }
+
   const [analytics, ambassadors] = await Promise.all([
-    getCachedDashboardAnalytics(),
+    getDashboardAnalytics(dateFilter),
     getCachedAmbassadorList(),
   ]);
 
@@ -36,6 +119,10 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      <Suspense>
+        <DateRangeFilter />
+      </Suspense>
+
       {/* כרטיסי סטטיסטיקה */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
         <div className="monday-stat-card" style={{ borderTop: "3px solid #0073ea" }}>
@@ -47,7 +134,7 @@ export default async function DashboardPage() {
           <div className="text-2xl font-bold">{analytics.totalLeads}</div>
         </div>
         <div className="monday-stat-card" style={{ borderTop: "3px solid #a25ddc" }}>
-          <div className="text-sm font-medium text-[#676879] mb-1">יזמים</div>
+          <div className="text-sm font-medium text-[#676879] mb-1">פרויקטים</div>
           <div className="text-2xl font-bold">{analytics.totalDevelopers}</div>
         </div>
         <div className="monday-stat-card" style={{ borderTop: "3px solid #00c875" }}>

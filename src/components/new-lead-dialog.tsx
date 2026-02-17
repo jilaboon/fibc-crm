@@ -121,6 +121,19 @@ export function NewLeadDialog({
               </div>
             </div>
             <div className="grid gap-2">
+              <Label htmlFor="dealType">סוג עסקה</Label>
+              <select
+                id="dealType"
+                name="dealType"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+              >
+                <option value="">בחר...</option>
+                <option value="Investment">השקעה</option>
+                <option value="Vacation">דירת נופש</option>
+                <option value="Aliyah">תכנון עלייה</option>
+              </select>
+            </div>
+            <div className="grid gap-2">
               <Label htmlFor="ambassadorId">שגריר</Label>
               <select
                 id="ambassadorId"

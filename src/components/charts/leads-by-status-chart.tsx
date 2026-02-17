@@ -13,19 +13,23 @@ import {
 const statusColors: Record<string, string> = {
   New: "#579bfc",
   Contacted: "#fdab3d",
-  Qualified: "#a25ddc",
-  Matched: "#0073ea",
-  ClosedWon: "#00c875",
-  ClosedLost: "#e2445c",
+  Meeting1: "#a25ddc",
+  Meeting2: "#9b59b6",
+  Negotiation: "#0073ea",
+  Registration: "#00c875",
+  Contract: "#00a85e",
+  NotRelevant: "#e2445c",
 };
 
 const statusLabels: Record<string, string> = {
   New: "חדש",
   Contacted: "נוצר קשר",
-  Qualified: "מתאים",
-  Matched: "שויך",
-  ClosedWon: "נסגר בהצלחה",
-  ClosedLost: "נסגר ללא הצלחה",
+  Meeting1: "פגישה 1",
+  Meeting2: "פגישה 2",
+  Negotiation: "משא ומתן",
+  Registration: "הרשמה",
+  Contract: "חוזה",
+  NotRelevant: "לא רלוונטי",
 };
 
 type Props = {

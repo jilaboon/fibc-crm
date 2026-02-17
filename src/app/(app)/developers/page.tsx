@@ -10,6 +10,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { NewProjectDialog } from "@/components/new-project-dialog";
 
 export default async function DevelopersPage() {
   const developers = await prisma.developer.findMany({
@@ -17,6 +18,8 @@ export default async function DevelopersPage() {
     select: {
       id: true,
       companyName: true,
+      developerName: true,
+      city: true,
       contactName: true,
       email: true,
       buildAreas: true,
@@ -30,8 +33,9 @@ export default async function DevelopersPage() {
     <div dir="rtl" className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="monday-group-header monday-group-purple text-xl">
-          יזמים
+          פרויקטים
         </div>
+        <NewProjectDialog />
       </div>
 
       <Card className="overflow-hidden border-0 shadow-sm">
@@ -40,9 +44,10 @@ export default async function DevelopersPage() {
             <Table className="monday-table">
               <TableHeader>
                 <TableRow className="bg-[#f6f7fb]">
-                  <TableHead className="text-right">חברה</TableHead>
-                  <TableHead className="text-right">איש קשר</TableHead>
-                  <TableHead className="text-right">אימייל</TableHead>
+                  <TableHead className="text-right">שם הפרויקט</TableHead>
+                  <TableHead className="text-right">יזם</TableHead>
+                  <TableHead className="text-right">עיר</TableHead>
+                  <TableHead className="text-right">איש קשר/מכירות</TableHead>
                   <TableHead className="text-right">אזורי בנייה</TableHead>
                   <TableHead className="text-right">סוג פרויקט</TableHead>
                   <TableHead className="text-right">טווח מחירים</TableHead>
@@ -60,8 +65,9 @@ export default async function DevelopersPage() {
                         {dev.companyName}
                       </Link>
                     </TableCell>
+                    <TableCell>{dev.developerName || "—"}</TableCell>
+                    <TableCell>{dev.city || "—"}</TableCell>
                     <TableCell>{dev.contactName}</TableCell>
-                    <TableCell>{dev.email}</TableCell>
                     <TableCell>
                       <div className="flex gap-1 flex-wrap">
                         {dev.buildAreas.split(",").map((area) => (
@@ -78,9 +84,9 @@ export default async function DevelopersPage() {
                 ))}
                 {developers.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
+                    <TableCell colSpan={8} className="text-center text-muted-foreground py-12">
                       <div className="space-y-2">
-                        <p className="text-lg">אין יזמים עדיין.</p>
+                        <p className="text-lg">אין פרויקטים עדיין.</p>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -100,8 +106,20 @@ export default async function DevelopersPage() {
                   </Link>
                   <span className="text-xs text-[#676879]">{dev._count.deals} עסקאות</span>
                 </div>
+                {dev.developerName && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#676879]">יזם</span>
+                    <span className="text-[#323338]">{dev.developerName}</span>
+                  </div>
+                )}
+                {dev.city && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#676879]">עיר</span>
+                    <span className="text-[#323338]">{dev.city}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#676879]">איש קשר</span>
+                  <span className="text-[#676879]">איש קשר/מכירות</span>
                   <span className="text-[#323338]">{dev.contactName}</span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -131,7 +149,7 @@ export default async function DevelopersPage() {
             {developers.length === 0 && (
               <div className="text-center text-muted-foreground py-12">
                 <div className="space-y-2">
-                  <p className="text-lg">אין יזמים עדיין.</p>
+                  <p className="text-lg">אין פרויקטים עדיין.</p>
                 </div>
               </div>
             )}

@@ -47,7 +47,7 @@ export function DealSection({ deal }: { deal: Deal }) {
         </div>
         <Separator />
         <div className="flex justify-between">
-          <span className="text-muted-foreground">יזם</span>
+          <span className="text-muted-foreground">פרויקט</span>
           <span>{deal.developer.companyName}</span>
         </div>
         <Separator />

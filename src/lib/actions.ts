@@ -26,6 +26,7 @@ export async function createAmbassador(formData: FormData) {
       country: (formData.get("country") as string) || "Israel",
       city: formData.get("city") as string,
       languages: formData.get("languages") as string,
+      occupation: (formData.get("occupation") as string) || null,
       hostsEvents: formData.get("hostsEvents") === "true",
       referralCode: generateReferralCode(fullName),
     },
@@ -54,6 +55,7 @@ export async function createLead(formData: FormData) {
       rooms: (formData.get("rooms") as string) || null,
       propertyType: (formData.get("propertyType") as string) || null,
       readiness: (formData.get("readiness") as string) || null,
+      dealType: (formData.get("dealType") as string) || null,
       notes: (formData.get("notes") as string) || null,
       source: "manual",
       ambassadorId: ambassadorId || null,
@@ -127,7 +129,7 @@ export async function matchToDeveloper(leadId: string, developerId: string) {
 
   await prisma.lead.update({
     where: { id: leadId },
-    data: { status: "Matched" },
+    data: { status: "Negotiation" },
   });
 
   revalidatePath(`/leads/${leadId}`);
@@ -153,7 +155,7 @@ export async function updateDealStage(dealId: string, stage: string) {
   if (stage === "ClosedWon") {
     await prisma.lead.update({
       where: { id: deal.leadId },
-      data: { status: "ClosedWon" },
+      data: { status: "Contract" },
     });
 
     if (!wasAlreadyClosedWon && deal.ambassadorId) {
@@ -165,7 +167,7 @@ export async function updateDealStage(dealId: string, stage: string) {
   } else if (stage === "ClosedLost") {
     await prisma.lead.update({
       where: { id: deal.leadId },
-      data: { status: "ClosedLost" },
+      data: { status: "NotRelevant" },
     });
   }
 
@@ -207,6 +209,62 @@ export async function getLeadSuggestions(leadId: string) {
     const areas = dev.buildAreas.split(",").map((a) => a.trim().toLowerCase());
     return areas.includes(lead.preferredArea!.toLowerCase());
   });
+}
+
+// --- Lead Detail Actions ---
+
+export async function updateLeadDealType(leadId: string, dealType: string) {
+  await getAuthContext();
+
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: { dealType: dealType || null },
+  });
+
+  revalidatePath(`/leads/${leadId}`);
+  revalidatePath("/leads");
+}
+
+export async function createLeadTask(leadId: string, subject: string, dueDate: string, dueTime: string) {
+  await getAuthContext();
+
+  await prisma.leadTask.create({
+    data: {
+      leadId,
+      subject,
+      dueDate: new Date(dueDate),
+      dueTime: dueTime || null,
+    },
+  });
+
+  revalidatePath(`/leads/${leadId}`);
+}
+
+export async function toggleLeadTask(taskId: string, leadId: string) {
+  await getAuthContext();
+
+  const task = await prisma.leadTask.findUnique({ where: { id: taskId } });
+  if (!task) throw new Error("משימה לא נמצאה");
+
+  await prisma.leadTask.update({
+    where: { id: taskId },
+    data: { completed: !task.completed },
+  });
+
+  revalidatePath(`/leads/${leadId}`);
+}
+
+export async function addLeadNote(leadId: string, content: string) {
+  await getAuthContext();
+
+  await prisma.leadNote.create({
+    data: {
+      leadId,
+      content,
+    },
+  });
+
+  revalidatePath(`/leads/${leadId}`);
 }
 
 // --- User Management Actions (ADMIN only) ---
@@ -344,6 +402,32 @@ export async function submitReferral(formData: FormData) {
   return { success: true, leadId: lead.id };
 }
 
+export async function createDeveloper(formData: FormData) {
+  await getAuthContext();
+
+  const developer = await prisma.developer.create({
+    data: {
+      companyName: formData.get("companyName") as string,
+      developerName: (formData.get("developerName") as string) || null,
+      contactName: formData.get("contactName") as string,
+      email: formData.get("email") as string,
+      phone: (formData.get("phone") as string) || null,
+      city: (formData.get("city") as string) || null,
+      buildAreas: formData.get("buildAreas") as string,
+      projectType: formData.get("projectType") as string,
+      apartmentMix: (formData.get("apartmentMix") as string) || null,
+      priceRange: (formData.get("priceRange") as string) || null,
+      notes: (formData.get("notes") as string) || null,
+    },
+  });
+
+  revalidatePath("/developers");
+  revalidateTag("dashboard", { expire: 0 });
+  revalidatePath("/dashboard");
+  revalidateTag("developers", { expire: 0 });
+  return developer;
+}
+
 // --- Delete Actions ---
 
 export async function deleteLead(leadId: string) {
@@ -384,7 +468,7 @@ export async function deleteDeveloper(developerId: string) {
     where: { id: developerId },
     include: { deals: true },
   });
-  if (!developer) throw new Error("יזם לא נמצא");
+  if (!developer) throw new Error("פרויקט לא נמצא");
 
   if (developer.deals.length > 0) {
     await prisma.deal.deleteMany({ where: { developerId } });
@@ -396,6 +480,28 @@ export async function deleteDeveloper(developerId: string) {
   revalidateTag("dashboard", { expire: 0 });
   revalidatePath("/dashboard");
   revalidateTag("developers", { expire: 0 });
+}
+
+export async function deleteProjectFile(fileId: string) {
+  await getAuthContext();
+
+  const file = await prisma.projectFile.findUnique({ where: { id: fileId } });
+  if (!file) throw new Error("קובץ לא נמצא");
+
+  // Delete from Supabase Storage
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const adminClient = createAdminClient();
+  // Extract storage path from the public URL
+  const bucketUrl = `/storage/v1/object/public/project-files/`;
+  const urlIndex = file.fileUrl.indexOf(bucketUrl);
+  if (urlIndex !== -1) {
+    const storagePath = file.fileUrl.substring(urlIndex + bucketUrl.length);
+    await adminClient.storage.from("project-files").remove([storagePath]);
+  }
+
+  await prisma.projectFile.delete({ where: { id: fileId } });
+
+  revalidatePath(`/developers/${file.developerId}`);
 }
 
 export async function deleteAmbassador(

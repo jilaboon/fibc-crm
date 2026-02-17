@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/status-badge";
 import { DeleteDeveloperButton } from "./delete-developer-button";
+import { ProjectFiles } from "./project-files";
 import Link from "next/link";
 
 export default async function DeveloperDetailPage({
@@ -36,6 +37,9 @@ export default async function DeveloperDetailPage({
           ambassador: { select: { fullName: true } },
         },
       },
+      files: {
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
 
@@ -45,7 +49,7 @@ export default async function DeveloperDetailPage({
     <div dir="rtl" className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/developers" className="text-[#0073ea] hover:text-[#0060c2] font-medium">
-          &rarr; יזמים
+          &rarr; פרויקטים
         </Link>
       </div>
 
@@ -65,8 +69,26 @@ export default async function DeveloperDetailPage({
             פרטים
           </div>
           <div className="space-y-3">
+            {developer.developerName && (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-[#676879]">יזם</span>
+                  <span>{developer.developerName}</span>
+                </div>
+                <Separator className="bg-[#e6e9ef]" />
+              </>
+            )}
+            {developer.city && (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-[#676879]">עיר</span>
+                  <span>{developer.city}</span>
+                </div>
+                <Separator className="bg-[#e6e9ef]" />
+              </>
+            )}
             <div className="flex justify-between">
-              <span className="text-[#676879]">איש קשר</span>
+              <span className="text-[#676879]">איש קשר/מכירות</span>
               <span>{developer.contactName}</span>
             </div>
             <Separator className="bg-[#e6e9ef]" />
@@ -95,6 +117,15 @@ export default async function DeveloperDetailPage({
               <span className="text-[#676879]">סוג פרויקט</span>
               <span>{developer.projectType}</span>
             </div>
+            {developer.apartmentMix && (
+              <>
+                <Separator className="bg-[#e6e9ef]" />
+                <div className="flex justify-between">
+                  <span className="text-[#676879]">תמהיל דירות</span>
+                  <span>{developer.apartmentMix}</span>
+                </div>
+              </>
+            )}
             <Separator className="bg-[#e6e9ef]" />
             <div className="flex justify-between">
               <span className="text-[#676879]">טווח מחירים</span>
@@ -129,6 +160,23 @@ export default async function DeveloperDetailPage({
           </div>
         </div>
       </div>
+
+      <Card className="border-[#e6e9ef] bg-white">
+        <CardHeader>
+          <div className="monday-group-header monday-group-blue text-base">
+            מסמכים
+          </div>
+        </CardHeader>
+        <CardContent>
+          <ProjectFiles
+            developerId={developer.id}
+            files={developer.files.map((f) => ({
+              ...f,
+              createdAt: f.createdAt.toISOString(),
+            }))}
+          />
+        </CardContent>
+      </Card>
 
       <Card className="border-[#e6e9ef] bg-white">
         <CardHeader>

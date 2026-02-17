@@ -77,6 +77,14 @@ export function NewAmbassadorDialog() {
                 required
               />
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="occupation">תעסוקה</Label>
+              <Input
+                id="occupation"
+                name="occupation"
+                placeholder="למשל: עורך דין, רואה חשבון"
+              />
+            </div>
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"

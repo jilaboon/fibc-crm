@@ -129,7 +129,7 @@ export default async function AppLayout({
               <path d="M3 9h18" />
               <path d="M9 21V9" />
             </svg>
-            יזמים
+            פרויקטים
           </NavLink>
           {profile.role === "ADMIN" && (
             <NavLink href="/settings/users" className="mt-4">

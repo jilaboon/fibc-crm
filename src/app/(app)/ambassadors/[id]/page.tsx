@@ -101,6 +101,11 @@ export default async function AmbassadorDetailPage({
             </div>
             <Separator className="bg-[#e6e9ef]" />
             <div className="flex justify-between">
+              <span className="text-[#676879]">תעסוקה</span>
+              <span>{ambassador.occupation || "—"}</span>
+            </div>
+            <Separator className="bg-[#e6e9ef]" />
+            <div className="flex justify-between">
               <span className="text-[#676879]">מארח אירועים</span>
               <span>{ambassador.hostsEvents ? "כן" : "לא"}</span>
             </div>

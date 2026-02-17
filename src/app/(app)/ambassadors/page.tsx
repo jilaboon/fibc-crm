@@ -10,10 +10,29 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { NewAmbassadorDialog } from "@/components/new-ambassador-dialog";
+import { DateRangeFilter } from "@/components/date-range-filter";
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
+import { Suspense } from "react";
 
-export default async function AmbassadorsPage() {
+export default async function AmbassadorsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const from = typeof params.from === "string" ? params.from : undefined;
+  const to = typeof params.to === "string" ? params.to : undefined;
+
+  const where: Prisma.AmbassadorWhereInput = {};
+  if (from || to) {
+    where.createdAt = {};
+    if (from) where.createdAt.gte = new Date(from);
+    if (to) where.createdAt.lte = new Date(to + "T23:59:59.999Z");
+  }
+
   const ambassadors = await prisma.ambassador.findMany({
+    where,
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -35,6 +54,10 @@ export default async function AmbassadorsPage() {
         </div>
         <NewAmbassadorDialog />
       </div>
+
+      <Suspense>
+        <DateRangeFilter />
+      </Suspense>
 
       <Card className="border-[#e6e9ef] bg-white">
         <CardContent className="pt-6">

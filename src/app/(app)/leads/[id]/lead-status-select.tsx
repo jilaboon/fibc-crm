@@ -7,10 +7,12 @@ import { updateLeadStatus } from "@/lib/actions";
 const statuses = [
   { value: "New", label: "חדש", bg: "#579bfc" },
   { value: "Contacted", label: "נוצר קשר", bg: "#fdab3d" },
-  { value: "Qualified", label: "מתאים", bg: "#a25ddc" },
-  { value: "Matched", label: "הותאם", bg: "#0073ea" },
-  { value: "ClosedWon", label: "נסגר בהצלחה", bg: "#00c875" },
-  { value: "ClosedLost", label: "נסגר ללא הצלחה", bg: "#e2445c" },
+  { value: "Meeting1", label: "פגישה 1", bg: "#a25ddc" },
+  { value: "Meeting2", label: "פגישה 2", bg: "#9b59b6" },
+  { value: "Negotiation", label: "משא ומתן", bg: "#0073ea" },
+  { value: "Registration", label: "הרשמה", bg: "#00c875" },
+  { value: "Contract", label: "חוזה", bg: "#00a85e" },
+  { value: "NotRelevant", label: "לא רלוונטי", bg: "#e2445c" },
 ];
 
 export function LeadStatusSelect({

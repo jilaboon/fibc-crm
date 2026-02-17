@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { getCachedAmbassadorList } from "@/lib/cached-queries";
+import { getCachedAmbassadorList, getCachedDeveloperList } from "@/lib/cached-queries";
 import {
   Table,
   TableBody,
@@ -11,11 +11,39 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/components/status-badge";
 import { NewLeadDialog } from "@/components/new-lead-dialog";
+import { LeadsFilter } from "@/components/leads-filter";
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
+import { Suspense } from "react";
 
-export default async function LeadsPage() {
-  const [leads, ambassadors] = await Promise.all([
+export default async function LeadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const from = typeof params.from === "string" ? params.from : undefined;
+  const to = typeof params.to === "string" ? params.to : undefined;
+  const ambassadorId = typeof params.ambassador === "string" ? params.ambassador : undefined;
+  const projectId = typeof params.project === "string" ? params.project : undefined;
+
+  const where: Prisma.LeadWhereInput = {};
+
+  if (from || to) {
+    where.createdAt = {};
+    if (from) where.createdAt.gte = new Date(from);
+    if (to) where.createdAt.lte = new Date(to + "T23:59:59.999Z");
+  }
+  if (ambassadorId) {
+    where.ambassadorId = ambassadorId;
+  }
+  if (projectId) {
+    where.deals = { some: { developerId: projectId } };
+  }
+
+  const [leads, ambassadors, developers] = await Promise.all([
     prisma.lead.findMany({
+      where,
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -32,6 +60,7 @@ export default async function LeadsPage() {
       },
     }),
     getCachedAmbassadorList(),
+    getCachedDeveloperList(),
   ]);
 
   return (
@@ -42,6 +71,13 @@ export default async function LeadsPage() {
         </div>
         <NewLeadDialog ambassadors={ambassadors} />
       </div>
+
+      <Suspense>
+        <LeadsFilter
+          ambassadors={ambassadors}
+          projects={developers.map((d) => ({ id: d.id, companyName: d.companyName }))}
+        />
+      </Suspense>
 
       <Card className="overflow-hidden border-0 shadow-sm">
         <CardContent className="p-0">

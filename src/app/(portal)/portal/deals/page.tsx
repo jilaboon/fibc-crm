@@ -62,7 +62,7 @@ export default async function PortalDealsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-right">ליד</TableHead>
-                      <TableHead className="text-right">יזם</TableHead>
+                      <TableHead className="text-right">פרויקט</TableHead>
                       <TableHead className="text-right">שלב</TableHead>
                       <TableHead className="text-right">תאריך עדכון</TableHead>
                     </TableRow>
@@ -93,7 +93,7 @@ export default async function PortalDealsPage() {
                       <StatusBadge status={deal.stage} />
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-[#676879]">יזם</span>
+                      <span className="text-[#676879]">פרויקט</span>
                       <span className="text-[#323338]">{deal.developer.companyName}</span>
                     </div>
                     <div className="flex justify-between text-sm">

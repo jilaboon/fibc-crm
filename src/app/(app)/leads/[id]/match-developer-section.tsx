@@ -86,7 +86,7 @@ export function MatchDeveloperSection({
 
       <div>
         <p className="text-sm font-medium text-muted-foreground mb-2">
-          או בחר יזם:
+          או בחר פרויקט:
         </p>
         <form
           onSubmit={handleSelectMatch}
@@ -98,7 +98,7 @@ export function MatchDeveloperSection({
               disabled={isLoading}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
             >
-              <option value="">בחר יזם...</option>
+              <option value="">בחר פרויקט...</option>
               {allDevelopers.map((dev) => (
                 <option key={dev.id} value={dev.id}>
                   {dev.companyName} ({dev.buildAreas})
