@@ -18,6 +18,8 @@ const fileTypeLabel: Record<string, string> = {
   pdf: "PDF",
   xlsx: "Excel",
   xls: "Excel",
+  doc: "Word",
+  docx: "Word",
   csv: "CSV",
 };
 
@@ -83,7 +85,7 @@ export function AmbassadorFiles({
         <label className="cursor-pointer">
           <input
             type="file"
-            accept=".pdf,.xlsx,.xls,.csv"
+            accept=".pdf,.xlsx,.xls,.csv,.doc,.docx"
             onChange={handleUpload}
             disabled={uploading}
             className="hidden"

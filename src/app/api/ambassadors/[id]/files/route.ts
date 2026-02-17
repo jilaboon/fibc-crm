@@ -8,6 +8,8 @@ const ALLOWED_TYPES = [
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // xlsx
   "application/vnd.ms-excel", // xls
+  "application/msword", // doc
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
   "text/csv",
 ];
 const BUCKET_NAME = "ambassador-files";
