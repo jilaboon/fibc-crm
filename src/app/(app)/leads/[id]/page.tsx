@@ -91,13 +91,11 @@ export default async function LeadDetailPage({
               </Badge>
             </Link>
           ) : (
-            !activeDeal && (
-              <ConvertToAmbassadorDialog
-                leadId={lead.id}
-                leadName={lead.fullName}
-                leadEmail={lead.email}
-              />
-            )
+            <ConvertToAmbassadorDialog
+              leadId={lead.id}
+              leadName={lead.fullName}
+              leadEmail={lead.email}
+            />
           )}
           <DeleteLeadButton leadId={lead.id} leadName={lead.fullName} />
         </div>
