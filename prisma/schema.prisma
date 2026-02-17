@@ -44,6 +44,7 @@ model Ambassador {
 
   leads Lead[]
   deals Deal[]
+  files AmbassadorFile[]
 }
 
 model Lead {
@@ -124,6 +125,17 @@ model ProjectFile {
 
   developerId String    @db.Uuid
   developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+}
+
+model AmbassadorFile {
+  id        String   @id @default(uuid()) @db.Uuid
+  fileName  String
+  fileUrl   String
+  fileType  String // "pdf", "xlsx", etc.
+  createdAt DateTime @default(now())
+
+  ambassadorId String     @db.Uuid
+  ambassador   Ambassador @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
 }
 
 model Deal {

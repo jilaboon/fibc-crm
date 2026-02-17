@@ -504,6 +504,26 @@ export async function deleteProjectFile(fileId: string) {
   revalidatePath(`/developers/${file.developerId}`);
 }
 
+export async function deleteAmbassadorFile(fileId: string) {
+  const { role } = await getAuthContext();
+  if (role !== "ADMIN") throw new Error("רק מנהלים יכולים למחוק מסמכים");
+
+  const file = await prisma.ambassadorFile.findUnique({ where: { id: fileId } });
+  if (!file) throw new Error("קובץ לא נמצא");
+
+  const adminClient = createAdminClient();
+  const bucketUrl = `/storage/v1/object/public/ambassador-files/`;
+  const urlIndex = file.fileUrl.indexOf(bucketUrl);
+  if (urlIndex !== -1) {
+    const storagePath = file.fileUrl.substring(urlIndex + bucketUrl.length);
+    await adminClient.storage.from("ambassador-files").remove([storagePath]);
+  }
+
+  await prisma.ambassadorFile.delete({ where: { id: fileId } });
+
+  revalidatePath(`/ambassadors/${file.ambassadorId}`);
+}
+
 export async function deleteAmbassador(
   ambassadorId: string,
   deleteLeads: boolean

@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/status-badge";
 import { DeleteAmbassadorButton } from "@/components/delete-ambassador-button";
+import { AmbassadorFiles } from "./ambassador-files";
 import Link from "next/link";
 
 export default async function AmbassadorDetailPage({
@@ -36,6 +37,9 @@ export default async function AmbassadorDetailPage({
           preferredArea: true,
           readiness: true,
         },
+      },
+      files: {
+        orderBy: { createdAt: "desc" },
       },
     },
   });
@@ -134,6 +138,23 @@ export default async function AmbassadorDetailPage({
           </div>
         </div>
       </div>
+
+      <Card className="border-[#e6e9ef] bg-white">
+        <CardHeader>
+          <div className="monday-group-header monday-group-blue text-base">
+            הסכמים ומסמכים
+          </div>
+        </CardHeader>
+        <CardContent>
+          <AmbassadorFiles
+            ambassadorId={ambassador.id}
+            files={ambassador.files.map((f) => ({
+              ...f,
+              createdAt: f.createdAt.toISOString(),
+            }))}
+          />
+        </CardContent>
+      </Card>
 
       <Card className="border-[#e6e9ef] bg-white">
         <CardHeader>

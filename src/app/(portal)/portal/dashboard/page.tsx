@@ -18,6 +18,11 @@ export default async function PortalDashboardPage() {
 
   const ambassador = await prisma.ambassador.findUnique({
     where: { userProfileId: profile.id },
+    include: {
+      files: {
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
   if (!ambassador) redirect("/login");
 
@@ -123,6 +128,42 @@ export default async function PortalDashboardPage() {
                 </div>
               </div>
               <CopyButton text={referralLink} />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Documents (read-only) */}
+      {ambassador.files.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="monday-group-header monday-group-blue">
+              הסכמים ומסמכים
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {ambassador.files.map((file) => (
+                <div key={file.id} className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-[#676879] bg-[#f6f7fb] px-2 py-0.5 rounded shrink-0">
+                    {file.fileType === "pdf"
+                      ? "PDF"
+                      : file.fileType === "xlsx" || file.fileType === "xls"
+                        ? "Excel"
+                        : file.fileType === "csv"
+                          ? "CSV"
+                          : file.fileType.toUpperCase()}
+                  </span>
+                  <a
+                    href={file.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-[#0073ea] hover:underline truncate"
+                  >
+                    {file.fileName}
+                  </a>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
