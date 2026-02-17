@@ -12,6 +12,8 @@ import { LeadStatusSelect } from "./lead-status-select";
 import { DealTypeSelect } from "./deal-type-select";
 import { LeadTasks } from "./lead-tasks";
 import { LeadNotes } from "./lead-notes";
+import { ConvertToAmbassadorDialog } from "./convert-to-ambassador-dialog";
+import { Badge } from "@/components/ui/badge";
 
 export default async function LeadDetailPage({
   params,
@@ -36,6 +38,9 @@ export default async function LeadDetailPage({
         },
         leadNotes: {
           orderBy: { createdAt: "desc" },
+        },
+        convertedAmbassador: {
+          select: { id: true, fullName: true },
         },
       },
     }),
@@ -78,7 +83,24 @@ export default async function LeadDetailPage({
           <h2 className="text-3xl font-bold tracking-tight">{lead.fullName}</h2>
           <LeadStatusSelect leadId={lead.id} currentStatus={lead.status} />
         </div>
-        <DeleteLeadButton leadId={lead.id} leadName={lead.fullName} />
+        <div className="flex items-center gap-2">
+          {lead.convertedAmbassador ? (
+            <Link href={`/ambassadors/${lead.convertedAmbassador.id}`}>
+              <Badge className="bg-[#00c875] hover:bg-[#00b461] text-white cursor-pointer">
+                הומר לשגריר: {lead.convertedAmbassador.fullName}
+              </Badge>
+            </Link>
+          ) : (
+            !activeDeal && (
+              <ConvertToAmbassadorDialog
+                leadId={lead.id}
+                leadName={lead.fullName}
+                leadEmail={lead.email}
+              />
+            )
+          )}
+          <DeleteLeadButton leadId={lead.id} leadName={lead.fullName} />
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">

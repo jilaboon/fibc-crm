@@ -39,8 +39,10 @@ model Ambassador {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  userProfileId String?      @unique @db.Uuid
-  userProfile   UserProfile? @relation("UserAmbassador", fields: [userProfileId], references: [id])
+  userProfileId      String?      @unique @db.Uuid
+  userProfile        UserProfile? @relation("UserAmbassador", fields: [userProfileId], references: [id])
+  convertedFromLeadId String?     @unique @db.Uuid
+  convertedFromLead   Lead?       @relation("LeadToAmbassador", fields: [convertedFromLeadId], references: [id])
 
   leads Lead[]
   deals Deal[]
@@ -70,9 +72,10 @@ model Lead {
   ambassadorId String?    @db.Uuid
   ambassador   Ambassador? @relation(fields: [ambassadorId], references: [id])
 
-  deals     Deal[]
-  tasks     LeadTask[]
-  leadNotes LeadNote[]
+  deals              Deal[]
+  tasks              LeadTask[]
+  leadNotes          LeadNote[]
+  convertedAmbassador Ambassador? @relation("LeadToAmbassador")
 }
 
 model LeadTask {

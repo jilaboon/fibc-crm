@@ -444,6 +444,75 @@ export async function createDeveloper(formData: FormData) {
   return developer;
 }
 
+// --- Convert Lead to Ambassador ---
+
+export async function convertLeadToAmbassador(leadId: string, tempPassword: string) {
+  const { role } = await getAuthContext();
+  if (role !== "ADMIN") throw new Error("רק מנהלים יכולים להמיר לידים לשגרירים");
+
+  // 1. Validate lead exists
+  const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+  if (!lead) throw new Error("ליד לא נמצא");
+
+  // 2. Check if already converted
+  const existingConversion = await prisma.ambassador.findUnique({
+    where: { convertedFromLeadId: leadId },
+  });
+  if (existingConversion) throw new Error("ליד זה כבר הומר לשגריר");
+
+  // 3. Check if email already exists as ambassador
+  const existingAmbassador = await prisma.ambassador.findUnique({
+    where: { email: lead.email },
+  });
+  if (existingAmbassador) throw new Error("כבר קיים שגריר עם כתובת אימייל זו");
+
+  // 4. Create Supabase auth user
+  const adminClient = createAdminClient();
+  const { data, error } = await adminClient.auth.admin.createUser({
+    email: lead.email,
+    password: tempPassword,
+    email_confirm: true,
+    user_metadata: { full_name: lead.fullName, role: "AMBASSADOR" },
+    app_metadata: { role: "AMBASSADOR" },
+  });
+
+  if (error) throw new Error(error.message);
+
+  // 5. Create UserProfile
+  const profile = await prisma.userProfile.create({
+    data: {
+      userId: data.user.id,
+      role: "AMBASSADOR",
+      fullName: lead.fullName,
+      email: lead.email,
+    },
+  });
+
+  // 6. Create Ambassador record
+  const ambassador = await prisma.ambassador.create({
+    data: {
+      fullName: lead.fullName,
+      email: lead.email,
+      phone: lead.phone,
+      country: lead.country,
+      city: lead.city || "",
+      languages: "עברית",
+      referralCode: generateReferralCode(lead.fullName),
+      convertedFromLeadId: leadId,
+      userProfileId: profile.id,
+    },
+  });
+
+  revalidatePath("/leads");
+  revalidatePath(`/leads/${leadId}`);
+  revalidatePath("/ambassadors");
+  revalidateTag("ambassadors", { expire: 0 });
+  revalidatePath("/dashboard");
+  revalidateTag("dashboard", { expire: 0 });
+
+  return ambassador;
+}
+
 // --- Delete Actions ---
 
 export async function deleteLead(leadId: string) {

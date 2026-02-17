@@ -41,6 +41,9 @@ export default async function AmbassadorDetailPage({
       files: {
         orderBy: { createdAt: "desc" },
       },
+      convertedFromLead: {
+        select: { id: true, fullName: true },
+      },
     },
   });
 
@@ -113,6 +116,20 @@ export default async function AmbassadorDetailPage({
               <span className="text-[#676879]">מארח אירועים</span>
               <span>{ambassador.hostsEvents ? "כן" : "לא"}</span>
             </div>
+            {ambassador.convertedFromLead && (
+              <>
+                <Separator className="bg-[#e6e9ef]" />
+                <div className="flex justify-between">
+                  <span className="text-[#676879]">הומר מליד</span>
+                  <Link
+                    href={`/leads/${ambassador.convertedFromLead.id}`}
+                    className="text-[#0073ea] hover:underline font-medium"
+                  >
+                    {ambassador.convertedFromLead.fullName}
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
