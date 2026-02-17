@@ -71,7 +71,7 @@ export default async function PortalLeadsPage({
         <CardContent>
           {leads.length === 0 ? (
             <div className="text-sm text-[#676879] py-4 text-center">
-              עדיין אין לידים. שתף את קישור ההפניה שלך כדי להתחיל!
+              עדיין אין לידים. שתף את הקישור לדף ההפניה האישי שלך כדי להתחיל!
             </div>
           ) : (
             <>

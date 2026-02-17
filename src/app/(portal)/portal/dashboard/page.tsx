@@ -119,7 +119,7 @@ export default async function PortalDashboardPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-sm font-medium text-[#676879] mb-2">
-              קישור ההפניה שלך
+              קישור לדף ההפניה האישי שלך
             </div>
             <div className="flex items-center gap-2">
               <div className="text-sm font-mono bg-[#f6f7fb] rounded px-3 py-2 border border-[#e6e9ef] truncate flex-1 min-w-0">
@@ -177,7 +177,7 @@ export default async function PortalDashboardPage() {
         <CardContent>
           {recentLeads.length === 0 ? (
             <div className="text-sm text-[#676879] py-4 text-center">
-              עדיין אין לידים. שתף את קישור ההפניה שלך כדי להתחיל!
+              עדיין אין לידים. שתף את הקישור לדף ההפניה האישי שלך כדי להתחיל!
             </div>
           ) : (
             <>

@@ -336,6 +336,22 @@ export async function updateUserRole(userId: string, newRole: string) {
   revalidatePath("/settings/users");
 }
 
+export async function resetUserPassword(userId: string, newPassword: string) {
+  const { role } = await getAuthContext();
+  if (role !== "ADMIN") throw new Error("רק מנהלים יכולים לאפס סיסמאות");
+
+  if (newPassword.length < 6) throw new Error("הסיסמה חייבת להכיל לפחות 6 תווים");
+
+  const profile = await prisma.userProfile.findUnique({ where: { id: userId } });
+  if (!profile) throw new Error("משתמש לא נמצא");
+
+  const adminClient = createAdminClient();
+  const { error } = await adminClient.auth.admin.updateUserById(profile.userId, {
+    password: newPassword,
+  });
+  if (error) throw new Error(error.message);
+}
+
 export async function toggleUserActive(userId: string) {
   const { role } = await getAuthContext();
   if (role !== "ADMIN") throw new Error("רק מנהלים יכולים לנהל משתמשים");

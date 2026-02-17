@@ -158,7 +158,7 @@ export function PortalMobileSidebar({
           {/* Referral link */}
           {referralLink && (
             <div className="px-4 py-3 border-t border-white/10">
-              <div className="text-xs text-white/40 mb-2">קישור ההפניה שלך</div>
+              <div className="text-xs text-white/40 mb-2">קישור לדף ההפניה האישי שלך</div>
               <div className="flex items-center gap-2">
                 <div className="text-xs text-white/60 bg-white/5 rounded px-2 py-1.5 break-all leading-relaxed flex-1 min-w-0">
                   {referralLink}
