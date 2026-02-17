@@ -23,12 +23,14 @@ export function LeadTasks({
 }) {
   const [loading, setLoading] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [saved, setSaved] = useState<string | null>(null);
   const router = useRouter();
 
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
+    setSaved(null);
     try {
       const form = e.currentTarget;
       const formData = new FormData(form);
@@ -38,6 +40,8 @@ export function LeadTasks({
       await createLeadTask(leadId, subject, dueDate, dueTime);
       form.reset();
       router.refresh();
+      setSaved("משימה נוספה");
+      setTimeout(() => setSaved(null), 2000);
     } catch (err) {
       alert(err instanceof Error ? err.message : "שגיאה ביצירת משימה");
     } finally {
@@ -102,6 +106,9 @@ export function LeadTasks({
         <Button type="submit" size="sm" disabled={loading} className="w-full">
           {loading ? "מוסיף..." : "הוסף משימה"}
         </Button>
+        {saved && !loading && (
+          <span className="text-xs text-[#00c875] font-medium">{saved}</span>
+        )}
       </form>
     </div>
   );

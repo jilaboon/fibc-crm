@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -22,15 +22,23 @@ interface Deal {
 
 export function DealSection({ deal }: { deal: Deal }) {
   const [loading, setLoading] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
   const router = useRouter();
   const isTerminal = deal.stage === "ClosedWon" || deal.stage === "ClosedLost";
   const isLoading = loading !== null;
 
+  const showSaved = useCallback(() => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }, []);
+
   async function handleStageChange(stage: string) {
     setLoading(stage);
+    setSaved(false);
     try {
       await updateDealStage(deal.id, stage);
       router.refresh();
+      showSaved();
     } catch (err) {
       alert(err instanceof Error ? err.message : "שגיאה בעדכון שלב");
     } finally {
@@ -76,36 +84,41 @@ export function DealSection({ deal }: { deal: Deal }) {
       </div>
 
       {!isTerminal && (
-        <div className="flex flex-wrap gap-2 pt-2">
-          {deal.stage === "Negotiation" && (
-            <Button
-              size="sm"
-              disabled={isLoading}
-              onClick={() => handleStageChange("Contract")}
-              className="bg-[#0073ea] hover:bg-[#0060c2] text-white"
-            >
-              {loading === "Contract" ? "מעדכן..." : "העבר לחוזה"}
-            </Button>
-          )}
-          {(deal.stage === "Negotiation" || deal.stage === "Contract") && (
-            <>
+        <div className="space-y-2 pt-2">
+          <div className="flex flex-wrap gap-2">
+            {deal.stage === "Negotiation" && (
               <Button
                 size="sm"
                 disabled={isLoading}
-                onClick={() => handleStageChange("ClosedWon")}
-                className="bg-[#00c875] hover:bg-[#00a85e] text-white"
+                onClick={() => handleStageChange("Contract")}
+                className="bg-[#0073ea] hover:bg-[#0060c2] text-white"
               >
-                {loading === "ClosedWon" ? "מעדכן..." : "נסגר בהצלחה"}
+                {loading === "Contract" ? "מעדכן..." : "העבר לחוזה"}
               </Button>
-              <Button
-                size="sm"
-                disabled={isLoading}
-                onClick={() => handleStageChange("ClosedLost")}
-                className="bg-[#e2445c] hover:bg-[#c93a4e] text-white"
-              >
-                {loading === "ClosedLost" ? "מעדכן..." : "נסגר ללא הצלחה"}
-              </Button>
-            </>
+            )}
+            {(deal.stage === "Negotiation" || deal.stage === "Contract") && (
+              <>
+                <Button
+                  size="sm"
+                  disabled={isLoading}
+                  onClick={() => handleStageChange("ClosedWon")}
+                  className="bg-[#00c875] hover:bg-[#00a85e] text-white"
+                >
+                  {loading === "ClosedWon" ? "מעדכן..." : "נסגר בהצלחה"}
+                </Button>
+                <Button
+                  size="sm"
+                  disabled={isLoading}
+                  onClick={() => handleStageChange("ClosedLost")}
+                  className="bg-[#e2445c] hover:bg-[#c93a4e] text-white"
+                >
+                  {loading === "ClosedLost" ? "מעדכן..." : "נסגר ללא הצלחה"}
+                </Button>
+              </>
+            )}
+          </div>
+          {saved && !isLoading && (
+            <span className="text-xs text-[#00c875] font-medium">שלב העסקה עודכן</span>
           )}
         </div>
       )}

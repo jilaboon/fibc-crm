@@ -118,16 +118,14 @@ export default async function PortalDashboardPage() {
       {referralLink && (
         <Card>
           <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="min-w-0">
-                <div className="text-sm font-medium text-[#676879] mb-1">
-                  קישור ההפניה שלך
-                </div>
-                <div className="text-sm font-mono bg-[#f6f7fb] rounded px-3 py-2 border border-[#e6e9ef] truncate">
-                  {referralLink}
-                </div>
+            <div className="text-sm font-medium text-[#676879] mb-2">
+              קישור ההפניה שלך
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-sm font-mono bg-[#f6f7fb] rounded px-3 py-2 border border-[#e6e9ef] truncate flex-1 min-w-0">
+                {referralLink}
               </div>
-              <CopyButton text={referralLink} />
+              <CopyButton text={referralLink} variant="light" />
             </div>
           </CardContent>
         </Card>

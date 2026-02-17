@@ -27,13 +27,17 @@ export function MatchDeveloperSection({
   allDevelopers,
 }: Props) {
   const [loading, setLoading] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
   const router = useRouter();
 
   async function handleMatch(developerId: string) {
     setLoading(developerId);
+    setSaved(false);
     try {
       await matchToDeveloper(leadId, developerId);
       router.refresh();
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       alert(err instanceof Error ? err.message : "שגיאה בהתאמה");
     } finally {
@@ -112,9 +116,12 @@ export function MatchDeveloperSection({
             disabled={isLoading}
             className="bg-[#0073ea] hover:bg-[#0060c2] text-white"
           >
-            {loading === "select" ? "מתאים..." : "התאם"}
+            {isLoading && !suggestions.some((s) => s.id === loading) ? "מתאים..." : "התאם"}
           </Button>
         </form>
+        {saved && !isLoading && (
+          <span className="text-xs text-[#00c875] font-medium mt-2 block">פרויקט הותאם בהצלחה</span>
+        )}
       </div>
     </div>
   );

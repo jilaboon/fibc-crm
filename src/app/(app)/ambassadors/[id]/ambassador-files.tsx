@@ -33,13 +33,20 @@ export function AmbassadorFiles({
   const [files, setFiles] = useState(initialFiles);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const router = useRouter();
+
+  function showFeedback(msg: string) {
+    setFeedback(msg);
+    setTimeout(() => setFeedback(null), 2000);
+  }
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
+    setFeedback(null);
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -57,6 +64,7 @@ export function AmbassadorFiles({
       const newFile = await res.json();
       setFiles((prev) => [newFile, ...prev]);
       router.refresh();
+      showFeedback("קובץ הועלה בהצלחה");
     } catch (err) {
       alert(err instanceof Error ? err.message : "שגיאה בהעלאת קובץ");
     } finally {
@@ -68,10 +76,12 @@ export function AmbassadorFiles({
   async function handleDelete(fileId: string) {
     if (!confirm("למחוק את הקובץ?")) return;
     setDeleting(fileId);
+    setFeedback(null);
     try {
       await deleteAmbassadorFile(fileId);
       setFiles((prev) => prev.filter((f) => f.id !== fileId));
       router.refresh();
+      showFeedback("קובץ נמחק");
     } catch (err) {
       alert(err instanceof Error ? err.message : "שגיאה במחיקת קובץ");
     } finally {
@@ -81,7 +91,7 @@ export function AmbassadorFiles({
 
   return (
     <div className="space-y-4">
-      <div>
+      <div className="flex items-center gap-3">
         <label className="cursor-pointer">
           <input
             type="file"
@@ -94,6 +104,9 @@ export function AmbassadorFiles({
             <span>{uploading ? "מעלה..." : "העלאת הסכם"}</span>
           </Button>
         </label>
+        {feedback && (
+          <span className="text-xs text-[#00c875] font-medium">{feedback}</span>
+        )}
       </div>
 
       {files.length === 0 ? (
@@ -124,7 +137,7 @@ export function AmbassadorFiles({
                   onClick={() => handleDelete(file.id)}
                   className="text-[#e2445c] hover:text-[#c93a4e] hover:bg-red-50 shrink-0 h-7 px-2"
                 >
-                  {deleting === file.id ? "..." : "מחק"}
+                  {deleting === file.id ? "מוחק..." : "מחק"}
                 </Button>
               </div>
             </div>

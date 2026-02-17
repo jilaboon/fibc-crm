@@ -24,18 +24,19 @@ export function DeleteAmbassadorButton({
   leadsCount,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<"only" | "with-leads" | null>(null);
   const router = useRouter();
+  const isLoading = loading !== null;
 
   async function handleDelete(withLeads: boolean) {
-    setLoading(true);
+    setLoading(withLeads ? "with-leads" : "only");
     try {
       await deleteAmbassador(ambassadorId, withLeads);
       router.push("/ambassadors");
       router.refresh();
     } catch (err) {
       alert(err instanceof Error ? err.message : "שגיאה במחיקה");
-      setLoading(false);
+      setLoading(null);
     }
   }
 
@@ -49,7 +50,7 @@ export function DeleteAmbassadorButton({
       >
         מחק
       </Button>
-      <Dialog open={open} onOpenChange={(v) => !loading && setOpen(v)}>
+      <Dialog open={open} onOpenChange={(v) => !isLoading && setOpen(v)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>מחיקת שגריר — {ambassadorName}</DialogTitle>
@@ -64,11 +65,13 @@ export function DeleteAmbassadorButton({
               <Button
                 variant="outline"
                 onClick={() => handleDelete(false)}
-                disabled={loading}
+                disabled={isLoading}
                 className="justify-start text-right h-auto py-3 px-4"
               >
                 <div>
-                  <div className="font-medium">מחק את השגריר בלבד</div>
+                  <div className="font-medium">
+                    {loading === "only" ? "מוחק..." : "מחק את השגריר בלבד"}
+                  </div>
                   <div className="text-xs text-[#676879] mt-0.5">
                     הלידים יישארו במערכת ללא שגריר מקושר
                   </div>
@@ -77,11 +80,13 @@ export function DeleteAmbassadorButton({
               <Button
                 variant="destructive"
                 onClick={() => handleDelete(true)}
-                disabled={loading}
+                disabled={isLoading}
                 className="justify-start text-right h-auto py-3 px-4"
               >
                 <div>
-                  <div className="font-medium">מחק את השגריר ואת כל הלידים שלו</div>
+                  <div className="font-medium">
+                    {loading === "with-leads" ? "מוחק..." : "מחק את השגריר ואת כל הלידים שלו"}
+                  </div>
                   <div className="text-xs text-white/80 mt-0.5">
                     {leadsCount} לידים יימחקו לצמיתות
                   </div>
@@ -90,7 +95,7 @@ export function DeleteAmbassadorButton({
               <Button
                 variant="ghost"
                 onClick={() => setOpen(false)}
-                disabled={loading}
+                disabled={isLoading}
               >
                 ביטול
               </Button>
@@ -100,16 +105,16 @@ export function DeleteAmbassadorButton({
               <Button
                 variant="outline"
                 onClick={() => setOpen(false)}
-                disabled={loading}
+                disabled={isLoading}
               >
                 ביטול
               </Button>
               <Button
                 variant="destructive"
                 onClick={() => handleDelete(false)}
-                disabled={loading}
+                disabled={isLoading}
               >
-                {loading ? "מוחק..." : "מחק"}
+                {loading === "only" ? "מוחק..." : "מחק"}
               </Button>
             </div>
           )}

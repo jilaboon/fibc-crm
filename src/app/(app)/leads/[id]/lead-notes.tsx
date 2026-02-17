@@ -34,16 +34,20 @@ export function LeadNotes({
 }) {
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState("");
+  const [saved, setSaved] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (loading || !content.trim()) return;
     setLoading(true);
+    setSaved(false);
     try {
       await addLeadNote(leadId, content.trim());
       setContent("");
       router.refresh();
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       alert(err instanceof Error ? err.message : "שגיאה בהוספת הערה");
     } finally {
@@ -78,6 +82,9 @@ export function LeadNotes({
         <Button type="submit" size="sm" disabled={loading || !content.trim()} className="w-full">
           {loading ? "מוסיף..." : "הוסף הערה"}
         </Button>
+        {saved && !loading && (
+          <span className="text-xs text-[#00c875] font-medium">הערה נוספה</span>
+        )}
       </form>
     </div>
   );
