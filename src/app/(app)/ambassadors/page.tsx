@@ -10,7 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { NewAmbassadorDialog } from "@/components/new-ambassador-dialog";
-import { DateRangeFilter } from "@/components/date-range-filter";
+import { AmbassadorsFilter } from "@/components/ambassadors-filter";
 import { Pagination } from "@/components/pagination";
 import Link from "next/link";
 import { Prisma } from "@prisma/client";
@@ -26,6 +26,9 @@ export default async function AmbassadorsPage({
   const params = await searchParams;
   const from = typeof params.from === "string" ? params.from : undefined;
   const to = typeof params.to === "string" ? params.to : undefined;
+  const country = typeof params.country === "string" ? params.country : undefined;
+  const language = typeof params.language === "string" ? params.language : undefined;
+  const sortReferrals = typeof params.sortReferrals === "string" ? params.sortReferrals : undefined;
   const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
   const skip = (page - 1) * PAGE_SIZE;
 
@@ -35,11 +38,24 @@ export default async function AmbassadorsPage({
     if (from) where.createdAt.gte = new Date(from);
     if (to) where.createdAt.lte = new Date(to + "T23:59:59.999Z");
   }
+  if (country) {
+    where.country = country;
+  }
+  if (language) {
+    where.languages = { contains: language, mode: "insensitive" };
+  }
+
+  const orderBy: Prisma.AmbassadorOrderByWithRelationInput =
+    sortReferrals === "desc"
+      ? { totalReferrals: "desc" }
+      : sortReferrals === "asc"
+        ? { totalReferrals: "asc" }
+        : { createdAt: "desc" };
 
   const [ambassadors, totalCount] = await Promise.all([
     prisma.ambassador.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       skip,
       take: PAGE_SIZE,
       select: {
@@ -66,7 +82,7 @@ export default async function AmbassadorsPage({
       </div>
 
       <Suspense>
-        <DateRangeFilter />
+        <AmbassadorsFilter />
       </Suspense>
 
       <Card className="border-[#e6e9ef] bg-white">

@@ -29,6 +29,8 @@ export default async function LeadsPage({
   const to = typeof params.to === "string" ? params.to : undefined;
   const ambassadorId = typeof params.ambassador === "string" ? params.ambassador : undefined;
   const projectId = typeof params.project === "string" ? params.project : undefined;
+  const status = typeof params.status === "string" ? params.status : undefined;
+  const country = typeof params.country === "string" ? params.country : undefined;
   const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
   const skip = (page - 1) * PAGE_SIZE;
 
@@ -44,6 +46,12 @@ export default async function LeadsPage({
   }
   if (projectId) {
     where.deals = { some: { developerId: projectId } };
+  }
+  if (status) {
+    where.status = status;
+  }
+  if (country) {
+    where.country = country;
   }
 
   const [leads, totalCount, ambassadors, developers] = await Promise.all([

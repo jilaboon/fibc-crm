@@ -11,7 +11,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
+import { PortalDealsFilter } from "@/components/portal-deals-filter";
 import { Pagination } from "@/components/pagination";
+import { Prisma } from "@prisma/client";
 import { Suspense } from "react";
 
 const PAGE_SIZE = 25;
@@ -36,12 +38,18 @@ export default async function PortalDealsPage({
   if (!ambassador) redirect("/login");
 
   const params = await searchParams;
+  const stage = typeof params.stage === "string" ? params.stage : undefined;
   const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
   const skip = (page - 1) * PAGE_SIZE;
 
+  const dealWhere: Prisma.DealWhereInput = { ambassadorId: ambassador.id };
+  if (stage) {
+    dealWhere.stage = stage;
+  }
+
   const [deals, totalCount] = await Promise.all([
     prisma.deal.findMany({
-      where: { ambassadorId: ambassador.id },
+      where: dealWhere,
       skip,
       take: PAGE_SIZE,
       select: {
@@ -53,12 +61,16 @@ export default async function PortalDealsPage({
       },
       orderBy: { updatedAt: "desc" },
     }),
-    prisma.deal.count({ where: { ambassadorId: ambassador.id } }),
+    prisma.deal.count({ where: dealWhere }),
   ]);
 
   return (
     <div dir="rtl" className="space-y-8">
       <h2 className="text-3xl font-bold tracking-tight">העסקאות שלי</h2>
+
+      <Suspense>
+        <PortalDealsFilter />
+      </Suspense>
 
       <Card>
         <CardHeader>

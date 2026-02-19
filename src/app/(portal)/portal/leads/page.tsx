@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
-import { DateRangeFilter } from "@/components/date-range-filter";
+import { PortalLeadsFilter } from "@/components/portal-leads-filter";
 import { Pagination } from "@/components/pagination";
 import { Prisma } from "@prisma/client";
 import { Suspense } from "react";
@@ -33,6 +33,7 @@ export default async function PortalLeadsPage({
   const params = await searchParams;
   const from = typeof params.from === "string" ? params.from : undefined;
   const to = typeof params.to === "string" ? params.to : undefined;
+  const status = typeof params.status === "string" ? params.status : undefined;
   const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
   const skip = (page - 1) * PAGE_SIZE;
 
@@ -41,6 +42,9 @@ export default async function PortalLeadsPage({
     where.createdAt = {};
     if (from) where.createdAt.gte = new Date(from);
     if (to) where.createdAt.lte = new Date(to + "T23:59:59.999Z");
+  }
+  if (status) {
+    where.status = status;
   }
 
   const [leads, totalCount] = await Promise.all([
@@ -68,7 +72,7 @@ export default async function PortalLeadsPage({
       <h2 className="text-3xl font-bold tracking-tight">הלידים שלי</h2>
 
       <Suspense>
-        <DateRangeFilter />
+        <PortalLeadsFilter />
       </Suspense>
 
       <Card>

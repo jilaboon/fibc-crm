@@ -11,13 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
-interface LeadsFilterProps {
-  ambassadors: { id: string; fullName: string }[];
-  projects: { id: string; companyName: string }[];
-}
-
-export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
+export function AmbassadorsFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -29,6 +25,7 @@ export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
       } else {
         params.delete(key);
       }
+      params.delete("page");
       router.push(`?${params.toString()}`);
     },
     [router, searchParams]
@@ -38,13 +35,27 @@ export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
     router.push("?");
   }, [router]);
 
+  const sortReferrals = searchParams.get("sortReferrals");
+
+  const cycleSortReferrals = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (!sortReferrals) {
+      params.set("sortReferrals", "desc");
+    } else if (sortReferrals === "desc") {
+      params.set("sortReferrals", "asc");
+    } else {
+      params.delete("sortReferrals");
+    }
+    params.delete("page");
+    router.push(`?${params.toString()}`);
+  }, [router, searchParams, sortReferrals]);
+
   const hasFilters =
     searchParams.has("from") ||
     searchParams.has("to") ||
-    searchParams.has("ambassador") ||
-    searchParams.has("project") ||
-    searchParams.has("status") ||
-    searchParams.has("country");
+    searchParams.has("country") ||
+    searchParams.has("language") ||
+    searchParams.has("sortReferrals");
 
   return (
     <div className="flex flex-wrap items-end gap-3 rounded-lg border border-[#e6e9ef] bg-white p-3">
@@ -67,28 +78,6 @@ export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-[#676879]">סטטוס</label>
-        <Select
-          value={searchParams.get("status") ?? ""}
-          onValueChange={(v) => updateParam("status", v === "all" ? "" : v)}
-        >
-          <SelectTrigger className="h-8 w-[140px] text-sm">
-            <SelectValue placeholder="כל הסטטוסים" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">כל הסטטוסים</SelectItem>
-            <SelectItem value="New">חדש</SelectItem>
-            <SelectItem value="Contacted">נוצר קשר</SelectItem>
-            <SelectItem value="Meeting1">פגישה 1</SelectItem>
-            <SelectItem value="Meeting2">פגישה 2</SelectItem>
-            <SelectItem value="Negotiation">משא ומתן</SelectItem>
-            <SelectItem value="Registration">הרשמה</SelectItem>
-            <SelectItem value="Contract">חוזה</SelectItem>
-            <SelectItem value="NotRelevant">לא רלוונטי</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-1">
         <label className="text-xs font-medium text-[#676879]">מדינה</label>
         <Select
           value={searchParams.get("country") ?? ""}
@@ -107,42 +96,42 @@ export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
         </Select>
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-[#676879]">שגריר</label>
+        <label className="text-xs font-medium text-[#676879]">שפה</label>
         <Select
-          value={searchParams.get("ambassador") ?? ""}
-          onValueChange={(v) => updateParam("ambassador", v === "all" ? "" : v)}
+          value={searchParams.get("language") ?? ""}
+          onValueChange={(v) => updateParam("language", v === "all" ? "" : v)}
         >
-          <SelectTrigger className="h-8 w-[160px] text-sm">
-            <SelectValue placeholder="כל השגרירים" />
+          <SelectTrigger className="h-8 w-[130px] text-sm">
+            <SelectValue placeholder="כל השפות" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">כל השגרירים</SelectItem>
-            {ambassadors.map((amb) => (
-              <SelectItem key={amb.id} value={amb.id}>
-                {amb.fullName}
-              </SelectItem>
-            ))}
+            <SelectItem value="all">כל השפות</SelectItem>
+            <SelectItem value="Hebrew">עברית</SelectItem>
+            <SelectItem value="English">אנגלית</SelectItem>
+            <SelectItem value="French">צרפתית</SelectItem>
+            <SelectItem value="Russian">רוסית</SelectItem>
+            <SelectItem value="Spanish">ספרדית</SelectItem>
+            <SelectItem value="Arabic">ערבית</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-[#676879]">פרויקט</label>
-        <Select
-          value={searchParams.get("project") ?? ""}
-          onValueChange={(v) => updateParam("project", v === "all" ? "" : v)}
+        <label className="text-xs font-medium text-[#676879]">מיין לפי הפניות</label>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 w-[140px] text-sm gap-1"
+          onClick={cycleSortReferrals}
         >
-          <SelectTrigger className="h-8 w-[160px] text-sm">
-            <SelectValue placeholder="כל הפרויקטים" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">כל הפרויקטים</SelectItem>
-            {projects.map((p) => (
-              <SelectItem key={p.id} value={p.id}>
-                {p.companyName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          הפניות
+          {sortReferrals === "desc" ? (
+            <ArrowDown className="h-3.5 w-3.5" />
+          ) : sortReferrals === "asc" ? (
+            <ArrowUp className="h-3.5 w-3.5" />
+          ) : (
+            <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
+          )}
+        </Button>
       </div>
       {hasFilters && (
         <Button

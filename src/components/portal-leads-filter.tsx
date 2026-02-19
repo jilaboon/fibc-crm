@@ -12,12 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface LeadsFilterProps {
-  ambassadors: { id: string; fullName: string }[];
-  projects: { id: string; companyName: string }[];
-}
-
-export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
+export function PortalLeadsFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -29,6 +24,7 @@ export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
       } else {
         params.delete(key);
       }
+      params.delete("page");
       router.push(`?${params.toString()}`);
     },
     [router, searchParams]
@@ -41,10 +37,7 @@ export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
   const hasFilters =
     searchParams.has("from") ||
     searchParams.has("to") ||
-    searchParams.has("ambassador") ||
-    searchParams.has("project") ||
-    searchParams.has("status") ||
-    searchParams.has("country");
+    searchParams.has("status");
 
   return (
     <div className="flex flex-wrap items-end gap-3 rounded-lg border border-[#e6e9ef] bg-white p-3">
@@ -85,62 +78,6 @@ export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
             <SelectItem value="Registration">הרשמה</SelectItem>
             <SelectItem value="Contract">חוזה</SelectItem>
             <SelectItem value="NotRelevant">לא רלוונטי</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-[#676879]">מדינה</label>
-        <Select
-          value={searchParams.get("country") ?? ""}
-          onValueChange={(v) => updateParam("country", v === "all" ? "" : v)}
-        >
-          <SelectTrigger className="h-8 w-[130px] text-sm">
-            <SelectValue placeholder="כל המדינות" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">כל המדינות</SelectItem>
-            <SelectItem value="Israel">ישראל</SelectItem>
-            <SelectItem value="USA">ארה״ב</SelectItem>
-            <SelectItem value="France">צרפת</SelectItem>
-            <SelectItem value="UK">בריטניה</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-[#676879]">שגריר</label>
-        <Select
-          value={searchParams.get("ambassador") ?? ""}
-          onValueChange={(v) => updateParam("ambassador", v === "all" ? "" : v)}
-        >
-          <SelectTrigger className="h-8 w-[160px] text-sm">
-            <SelectValue placeholder="כל השגרירים" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">כל השגרירים</SelectItem>
-            {ambassadors.map((amb) => (
-              <SelectItem key={amb.id} value={amb.id}>
-                {amb.fullName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-[#676879]">פרויקט</label>
-        <Select
-          value={searchParams.get("project") ?? ""}
-          onValueChange={(v) => updateParam("project", v === "all" ? "" : v)}
-        >
-          <SelectTrigger className="h-8 w-[160px] text-sm">
-            <SelectValue placeholder="כל הפרויקטים" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">כל הפרויקטים</SelectItem>
-            {projects.map((p) => (
-              <SelectItem key={p.id} value={p.id}>
-                {p.companyName}
-              </SelectItem>
-            ))}
           </SelectContent>
         </Select>
       </div>
