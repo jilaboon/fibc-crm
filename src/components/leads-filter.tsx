@@ -79,11 +79,15 @@ export function LeadsFilter({ ambassadors, projects }: LeadsFilterProps) {
             <SelectItem value="all">כל הסטטוסים</SelectItem>
             <SelectItem value="New">חדש</SelectItem>
             <SelectItem value="Contacted">נוצר קשר</SelectItem>
+            <SelectItem value="Qualified">מתאים</SelectItem>
+            <SelectItem value="Matched">שויך</SelectItem>
             <SelectItem value="Meeting1">פגישה 1</SelectItem>
             <SelectItem value="Meeting2">פגישה 2</SelectItem>
             <SelectItem value="Negotiation">משא ומתן</SelectItem>
             <SelectItem value="Registration">הרשמה</SelectItem>
             <SelectItem value="Contract">חוזה</SelectItem>
+            <SelectItem value="ClosedWon">נסגר בהצלחה</SelectItem>
+            <SelectItem value="ClosedLost">נסגר ללא הצלחה</SelectItem>
             <SelectItem value="NotRelevant">לא רלוונטי</SelectItem>
           </SelectContent>
         </Select>
