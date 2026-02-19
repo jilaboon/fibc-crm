@@ -99,6 +99,9 @@ export default async function LeadDetailPage({
         <div className="flex items-center gap-4">
           <h2 className="text-3xl font-bold tracking-tight">{lead.fullName}</h2>
           <LeadStatusSelect leadId={lead.id} currentStatus={lead.status} />
+          {lead.status === "NotRelevant" && lead.notRelevantReason && (
+            <span className="text-sm text-[#e2445c]">({lead.notRelevantReason})</span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {lead.convertedAmbassador ? (
