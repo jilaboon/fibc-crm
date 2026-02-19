@@ -20,21 +20,17 @@ const NewLeadDialog = dynamic(() =>
 const NewAmbassadorDialog = dynamic(() =>
   import("@/components/new-ambassador-dialog").then((m) => m.NewAmbassadorDialog)
 );
-const LeadsByStatusChart = dynamic(
-  () => import("@/components/charts/leads-by-status-chart").then((m) => m.LeadsByStatusChart),
-  { ssr: false }
+const LeadsByStatusChart = dynamic(() =>
+  import("@/components/charts/leads-by-status-chart").then((m) => m.LeadsByStatusChart)
 );
-const LeadsBySourceChart = dynamic(
-  () => import("@/components/charts/leads-by-source-chart").then((m) => m.LeadsBySourceChart),
-  { ssr: false }
+const LeadsBySourceChart = dynamic(() =>
+  import("@/components/charts/leads-by-source-chart").then((m) => m.LeadsBySourceChart)
 );
-const DealPipelineChart = dynamic(
-  () => import("@/components/charts/deal-pipeline-chart").then((m) => m.DealPipelineChart),
-  { ssr: false }
+const DealPipelineChart = dynamic(() =>
+  import("@/components/charts/deal-pipeline-chart").then((m) => m.DealPipelineChart)
 );
-const TopAmbassadorsChart = dynamic(
-  () => import("@/components/charts/top-ambassadors-chart").then((m) => m.TopAmbassadorsChart),
-  { ssr: false }
+const TopAmbassadorsChart = dynamic(() =>
+  import("@/components/charts/top-ambassadors-chart").then((m) => m.TopAmbassadorsChart)
 );
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
