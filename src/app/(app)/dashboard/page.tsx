@@ -13,24 +13,18 @@ import {
 import { StatusBadge } from "@/components/status-badge";
 import { DateRangeFilter } from "@/components/date-range-filter";
 import dynamic from "next/dynamic";
+import {
+  LeadsByStatusChart,
+  LeadsBySourceChart,
+  DealPipelineChart,
+  TopAmbassadorsChart,
+} from "@/components/charts/lazy-charts";
 
 const NewLeadDialog = dynamic(() =>
   import("@/components/new-lead-dialog").then((m) => m.NewLeadDialog)
 );
 const NewAmbassadorDialog = dynamic(() =>
   import("@/components/new-ambassador-dialog").then((m) => m.NewAmbassadorDialog)
-);
-const LeadsByStatusChart = dynamic(() =>
-  import("@/components/charts/leads-by-status-chart").then((m) => m.LeadsByStatusChart)
-);
-const LeadsBySourceChart = dynamic(() =>
-  import("@/components/charts/leads-by-source-chart").then((m) => m.LeadsBySourceChart)
-);
-const DealPipelineChart = dynamic(() =>
-  import("@/components/charts/deal-pipeline-chart").then((m) => m.DealPipelineChart)
-);
-const TopAmbassadorsChart = dynamic(() =>
-  import("@/components/charts/top-ambassadors-chart").then((m) => m.TopAmbassadorsChart)
 );
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
