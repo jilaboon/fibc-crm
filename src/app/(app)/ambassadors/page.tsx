@@ -46,11 +46,9 @@ export default async function AmbassadorsPage({
   }
 
   const orderBy: Prisma.AmbassadorOrderByWithRelationInput =
-    sortReferrals === "desc"
-      ? { totalReferrals: "desc" }
-      : sortReferrals === "asc"
-        ? { totalReferrals: "asc" }
-        : { createdAt: "desc" };
+    sortReferrals === "asc"
+      ? { totalReferrals: "asc" }
+      : { totalReferrals: "desc" };
 
   const [ambassadors, totalCount] = await Promise.all([
     prisma.ambassador.findMany({
