@@ -11,9 +11,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { NewAmbassadorDialog } from "@/components/new-ambassador-dialog";
 import { DateRangeFilter } from "@/components/date-range-filter";
+import { Pagination } from "@/components/pagination";
 import Link from "next/link";
 import { Prisma } from "@prisma/client";
 import { Suspense } from "react";
+
+const PAGE_SIZE = 25;
 
 export default async function AmbassadorsPage({
   searchParams,
@@ -23,6 +26,8 @@ export default async function AmbassadorsPage({
   const params = await searchParams;
   const from = typeof params.from === "string" ? params.from : undefined;
   const to = typeof params.to === "string" ? params.to : undefined;
+  const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
+  const skip = (page - 1) * PAGE_SIZE;
 
   const where: Prisma.AmbassadorWhereInput = {};
   if (from || to) {
@@ -31,20 +36,25 @@ export default async function AmbassadorsPage({
     if (to) where.createdAt.lte = new Date(to + "T23:59:59.999Z");
   }
 
-  const ambassadors = await prisma.ambassador.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      fullName: true,
-      country: true,
-      city: true,
-      languages: true,
-      hostsEvents: true,
-      totalReferrals: true,
-      closedDeals: true,
-    },
-  });
+  const [ambassadors, totalCount] = await Promise.all([
+    prisma.ambassador.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
+      select: {
+        id: true,
+        fullName: true,
+        country: true,
+        city: true,
+        languages: true,
+        hostsEvents: true,
+        totalReferrals: true,
+        closedDeals: true,
+      },
+    }),
+    prisma.ambassador.count({ where }),
+  ]);
 
   return (
     <div dir="rtl" className="space-y-6">
@@ -175,6 +185,9 @@ export default async function AmbassadorsPage({
             )}
           </div>
         </CardContent>
+        <Suspense>
+          <Pagination totalCount={totalCount} />
+        </Suspense>
       </Card>
     </div>
   );

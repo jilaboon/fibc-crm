@@ -7,17 +7,16 @@ const referralPattern = /^\/r\/[^/]+/;
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Refresh session once for all paths
+  const { user, supabase, supabaseResponse } = await updateSession(request);
+
   // Allow public paths and referral landing pages
   if (
     publicPaths.some((p) => pathname.startsWith(p)) ||
     referralPattern.test(pathname)
   ) {
-    const { supabaseResponse } = await updateSession(request);
     return supabaseResponse;
   }
-
-  // Refresh session & get user
-  const { user, supabase, supabaseResponse } = await updateSession(request);
 
   // Redirect unauthenticated users to login
   if (!user) {

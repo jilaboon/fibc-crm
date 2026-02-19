@@ -12,9 +12,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/components/status-badge";
 import { NewLeadDialog } from "@/components/new-lead-dialog";
 import { LeadsFilter } from "@/components/leads-filter";
+import { Pagination } from "@/components/pagination";
 import Link from "next/link";
 import { Prisma } from "@prisma/client";
 import { Suspense } from "react";
+
+const PAGE_SIZE = 25;
 
 export default async function LeadsPage({
   searchParams,
@@ -26,6 +29,8 @@ export default async function LeadsPage({
   const to = typeof params.to === "string" ? params.to : undefined;
   const ambassadorId = typeof params.ambassador === "string" ? params.ambassador : undefined;
   const projectId = typeof params.project === "string" ? params.project : undefined;
+  const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
+  const skip = (page - 1) * PAGE_SIZE;
 
   const where: Prisma.LeadWhereInput = {};
 
@@ -41,10 +46,12 @@ export default async function LeadsPage({
     where.deals = { some: { developerId: projectId } };
   }
 
-  const [leads, ambassadors, developers] = await Promise.all([
+  const [leads, totalCount, ambassadors, developers] = await Promise.all([
     prisma.lead.findMany({
       where,
       orderBy: { createdAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
       select: {
         id: true,
         fullName: true,
@@ -59,6 +66,7 @@ export default async function LeadsPage({
         ambassador: { select: { fullName: true } },
       },
     }),
+    prisma.lead.count({ where }),
     getCachedAmbassadorList(),
     getCachedDeveloperList(),
   ]);
@@ -174,6 +182,9 @@ export default async function LeadsPage({
             )}
           </div>
         </CardContent>
+        <Suspense>
+          <Pagination totalCount={totalCount} />
+        </Suspense>
       </Card>
     </div>
   );

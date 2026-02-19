@@ -9,25 +9,42 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Pagination } from "@/components/pagination";
 import Link from "next/link";
 import { NewProjectDialog } from "@/components/new-project-dialog";
+import { Suspense } from "react";
 
-export default async function DevelopersPage() {
-  const developers = await prisma.developer.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      companyName: true,
-      developerName: true,
-      city: true,
-      contactName: true,
-      email: true,
-      buildAreas: true,
-      projectType: true,
-      priceRange: true,
-      _count: { select: { deals: true } },
-    },
-  });
+const PAGE_SIZE = 25;
+
+export default async function DevelopersPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [developers, totalCount] = await Promise.all([
+    prisma.developer.findMany({
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
+      select: {
+        id: true,
+        companyName: true,
+        developerName: true,
+        city: true,
+        contactName: true,
+        email: true,
+        buildAreas: true,
+        projectType: true,
+        priceRange: true,
+        _count: { select: { deals: true } },
+      },
+    }),
+    prisma.developer.count(),
+  ]);
 
   return (
     <div dir="rtl" className="space-y-6">
@@ -155,6 +172,9 @@ export default async function DevelopersPage() {
             )}
           </div>
         </CardContent>
+        <Suspense>
+          <Pagination totalCount={totalCount} />
+        </Suspense>
       </Card>
     </div>
   );

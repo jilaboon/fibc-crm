@@ -11,6 +11,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
+import { Pagination } from "@/components/pagination";
+import { Suspense } from "react";
+
+const PAGE_SIZE = 25;
 
 const stageLabels: Record<string, string> = {
   Negotiation: "משא ומתן",
@@ -19,7 +23,11 @@ const stageLabels: Record<string, string> = {
   ClosedLost: "נסגר ללא הצלחה",
 };
 
-export default async function PortalDealsPage() {
+export default async function PortalDealsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { profile } = await getAuthContext();
 
   const ambassador = await prisma.ambassador.findUnique({
@@ -27,18 +35,26 @@ export default async function PortalDealsPage() {
   });
   if (!ambassador) redirect("/login");
 
-  const deals = await prisma.deal.findMany({
-    where: { ambassadorId: ambassador.id },
-    take: 50,
-    select: {
-      id: true,
-      stage: true,
-      updatedAt: true,
-      lead: { select: { fullName: true } },
-      developer: { select: { companyName: true } },
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+  const params = await searchParams;
+  const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [deals, totalCount] = await Promise.all([
+    prisma.deal.findMany({
+      where: { ambassadorId: ambassador.id },
+      skip,
+      take: PAGE_SIZE,
+      select: {
+        id: true,
+        stage: true,
+        updatedAt: true,
+        lead: { select: { fullName: true } },
+        developer: { select: { companyName: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+    prisma.deal.count({ where: { ambassadorId: ambassador.id } }),
+  ]);
 
   return (
     <div dir="rtl" className="space-y-8">
@@ -47,7 +63,7 @@ export default async function PortalDealsPage() {
       <Card>
         <CardHeader>
           <div className="monday-group-header monday-group-purple">
-            כל העסקאות ({deals.length})
+            כל העסקאות ({totalCount})
           </div>
         </CardHeader>
         <CardContent>
@@ -106,6 +122,9 @@ export default async function PortalDealsPage() {
             </>
           )}
         </CardContent>
+        <Suspense>
+          <Pagination totalCount={totalCount} />
+        </Suspense>
       </Card>
     </div>
   );

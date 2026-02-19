@@ -26,17 +26,34 @@ export default async function LeadDetailPage({
     prisma.lead.findUnique({
       where: { id },
       include: {
-        ambassador: true,
+        ambassador: {
+          select: { id: true, fullName: true },
+        },
         deals: {
-          include: {
+          select: {
+            id: true,
+            stage: true,
+            notes: true,
             developer: { select: { companyName: true, contactName: true } },
             ambassador: { select: { fullName: true } },
           },
         },
         tasks: {
+          select: {
+            id: true,
+            subject: true,
+            dueDate: true,
+            dueTime: true,
+            completed: true,
+          },
           orderBy: [{ completed: "asc" }, { dueDate: "asc" }],
         },
         leadNotes: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+          },
           orderBy: { createdAt: "desc" },
         },
         convertedAmbassador: {

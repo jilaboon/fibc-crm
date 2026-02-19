@@ -12,8 +12,11 @@ import {
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
 import { DateRangeFilter } from "@/components/date-range-filter";
+import { Pagination } from "@/components/pagination";
 import { Prisma } from "@prisma/client";
 import { Suspense } from "react";
+
+const PAGE_SIZE = 25;
 
 export default async function PortalLeadsPage({
   searchParams,
@@ -30,6 +33,8 @@ export default async function PortalLeadsPage({
   const params = await searchParams;
   const from = typeof params.from === "string" ? params.from : undefined;
   const to = typeof params.to === "string" ? params.to : undefined;
+  const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
+  const skip = (page - 1) * PAGE_SIZE;
 
   const where: Prisma.LeadWhereInput = { ambassadorId: ambassador.id };
   if (from || to) {
@@ -38,21 +43,25 @@ export default async function PortalLeadsPage({
     if (to) where.createdAt.lte = new Date(to + "T23:59:59.999Z");
   }
 
-  const leads = await prisma.lead.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    take: 50,
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      phone: true,
-      status: true,
-      budget: true,
-      preferredArea: true,
-      createdAt: true,
-    },
-  });
+  const [leads, totalCount] = await Promise.all([
+    prisma.lead.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        status: true,
+        budget: true,
+        preferredArea: true,
+        createdAt: true,
+      },
+    }),
+    prisma.lead.count({ where }),
+  ]);
 
   return (
     <div dir="rtl" className="space-y-8">
@@ -65,7 +74,7 @@ export default async function PortalLeadsPage({
       <Card>
         <CardHeader>
           <div className="monday-group-header monday-group-blue">
-            כל הלידים ({leads.length})
+            כל הלידים ({totalCount})
           </div>
         </CardHeader>
         <CardContent>
@@ -142,6 +151,9 @@ export default async function PortalLeadsPage({
             </>
           )}
         </CardContent>
+        <Suspense>
+          <Pagination totalCount={totalCount} />
+        </Suspense>
       </Card>
     </div>
   );

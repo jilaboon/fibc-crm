@@ -1,5 +1,5 @@
 import { getAuthContext } from "@/lib/auth";
-import { getCachedAmbassadorList } from "@/lib/cached-queries";
+import { getCachedAmbassadorList, getCachedDashboardAnalytics } from "@/lib/cached-queries";
 import { prisma } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,13 +11,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
-import { NewLeadDialog } from "@/components/new-lead-dialog";
-import { NewAmbassadorDialog } from "@/components/new-ambassador-dialog";
-import { LeadsByStatusChart } from "@/components/charts/leads-by-status-chart";
-import { LeadsBySourceChart } from "@/components/charts/leads-by-source-chart";
-import { DealPipelineChart } from "@/components/charts/deal-pipeline-chart";
-import { TopAmbassadorsChart } from "@/components/charts/top-ambassadors-chart";
 import { DateRangeFilter } from "@/components/date-range-filter";
+import dynamic from "next/dynamic";
+
+const NewLeadDialog = dynamic(() =>
+  import("@/components/new-lead-dialog").then((m) => m.NewLeadDialog)
+);
+const NewAmbassadorDialog = dynamic(() =>
+  import("@/components/new-ambassador-dialog").then((m) => m.NewAmbassadorDialog)
+);
+const LeadsByStatusChart = dynamic(
+  () => import("@/components/charts/leads-by-status-chart").then((m) => m.LeadsByStatusChart),
+  { ssr: false }
+);
+const LeadsBySourceChart = dynamic(
+  () => import("@/components/charts/leads-by-source-chart").then((m) => m.LeadsBySourceChart),
+  { ssr: false }
+);
+const DealPipelineChart = dynamic(
+  () => import("@/components/charts/deal-pipeline-chart").then((m) => m.DealPipelineChart),
+  { ssr: false }
+);
+const TopAmbassadorsChart = dynamic(
+  () => import("@/components/charts/top-ambassadors-chart").then((m) => m.TopAmbassadorsChart),
+  { ssr: false }
+);
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -105,7 +123,7 @@ export default async function DashboardPage({
   }
 
   const [analytics, ambassadors] = await Promise.all([
-    getDashboardAnalytics(dateFilter),
+    dateFilter ? getDashboardAnalytics(dateFilter) : getCachedDashboardAnalytics(),
     getCachedAmbassadorList(),
   ]);
 

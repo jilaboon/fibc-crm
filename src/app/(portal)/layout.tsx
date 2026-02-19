@@ -22,14 +22,17 @@ export default async function PortalLayout({
 
   const profile = await prisma.userProfile.findUnique({
     where: { userId: user.id },
+    select: {
+      id: true,
+      role: true,
+      fullName: true,
+      ambassador: true,
+    },
   });
 
   if (!profile || profile.role !== "AMBASSADOR") redirect("/login");
 
-  const ambassador = await prisma.ambassador.findUnique({
-    where: { userProfileId: profile.id },
-  });
-
+  const ambassador = profile.ambassador;
   if (!ambassador) redirect("/login");
 
   const referralLink = ambassador.referralCode

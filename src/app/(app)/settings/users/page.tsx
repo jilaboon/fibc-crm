@@ -2,8 +2,12 @@ import { prisma } from "@/lib/db";
 import { getAuthContext } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { Pagination } from "@/components/pagination";
 import { InviteUserDialog } from "./invite-user-dialog";
 import { UserActions } from "./user-actions";
+import { Suspense } from "react";
+
+const PAGE_SIZE = 25;
 
 const roleLabels: Record<string, string> = {
   ADMIN: "מנהל",
@@ -11,14 +15,27 @@ const roleLabels: Record<string, string> = {
   AMBASSADOR: "שגריר",
 };
 
-export default async function UsersSettingsPage() {
+export default async function UsersSettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { role, userId } = await getAuthContext();
   if (role !== "ADMIN") redirect("/dashboard");
 
-  const users = await prisma.userProfile.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { ambassador: { select: { fullName: true } } },
-  });
+  const params = await searchParams;
+  const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [users, totalCount] = await Promise.all([
+    prisma.userProfile.findMany({
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
+      include: { ambassador: { select: { fullName: true } } },
+    }),
+    prisma.userProfile.count(),
+  ]);
 
   return (
     <div>
@@ -32,7 +49,7 @@ export default async function UsersSettingsPage() {
         <InviteUserDialog />
       </div>
 
-      <div className="bg-white rounded-lg border border-[#e6e9ef]">
+      <div className="bg-white rounded-lg border border-[#e6e9ef] overflow-hidden">
         <div className="hidden md:block">
           <table className="w-full monday-table">
             <thead>
@@ -146,6 +163,9 @@ export default async function UsersSettingsPage() {
             </div>
           ))}
         </div>
+        <Suspense>
+          <Pagination totalCount={totalCount} />
+        </Suspense>
       </div>
     </div>
   );

@@ -21,6 +21,7 @@ export default async function AppLayout({
 
   const profile = await prisma.userProfile.findUnique({
     where: { userId: user.id },
+    select: { id: true, fullName: true, role: true },
   });
 
   if (!profile) redirect("/login");

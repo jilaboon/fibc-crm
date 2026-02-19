@@ -23,6 +23,7 @@ export const getAuthContext = cache(async (): Promise<AuthContext> => {
 
   const profile = await prisma.userProfile.findUnique({
     where: { userId: user.id },
+    select: { id: true, fullName: true, email: true, role: true },
   });
 
   if (!profile) redirect("/login");
