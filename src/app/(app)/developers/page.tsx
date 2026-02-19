@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/pagination";
 import Link from "next/link";
 import { NewProjectDialog } from "@/components/new-project-dialog";
+import { ExportButton } from "@/components/export-button";
 import { Suspense } from "react";
 
 const PAGE_SIZE = 25;
@@ -52,7 +53,12 @@ export default async function DevelopersPage({
         <div className="monday-group-header monday-group-purple text-xl">
           פרויקטים
         </div>
-        <NewProjectDialog />
+        <div className="flex gap-2">
+          <Suspense>
+            <ExportButton endpoint="/api/export/developers" />
+          </Suspense>
+          <NewProjectDialog />
+        </div>
       </div>
 
       <Card className="overflow-hidden border-0 shadow-sm">

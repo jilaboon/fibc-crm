@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/components/status-badge";
 import { NewLeadDialog } from "@/components/new-lead-dialog";
 import { LeadsFilter } from "@/components/leads-filter";
+import { ExportButton } from "@/components/export-button";
 import { Pagination } from "@/components/pagination";
 import Link from "next/link";
 import { Prisma } from "@prisma/client";
@@ -85,7 +86,12 @@ export default async function LeadsPage({
         <div className="monday-group-header monday-group-blue">
           <h2 className="text-2xl font-bold tracking-tight">לידים</h2>
         </div>
-        <NewLeadDialog ambassadors={ambassadors} />
+        <div className="flex gap-2">
+          <Suspense>
+            <ExportButton endpoint="/api/export/leads" />
+          </Suspense>
+          <NewLeadDialog ambassadors={ambassadors} />
+        </div>
       </div>
 
       <Suspense>

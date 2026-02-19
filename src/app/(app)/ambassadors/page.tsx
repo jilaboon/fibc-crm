@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { NewAmbassadorDialog } from "@/components/new-ambassador-dialog";
 import { AmbassadorsFilter } from "@/components/ambassadors-filter";
+import { ExportButton } from "@/components/export-button";
 import { Pagination } from "@/components/pagination";
 import Link from "next/link";
 import { Prisma } from "@prisma/client";
@@ -76,7 +77,12 @@ export default async function AmbassadorsPage({
         <div className="monday-group-header monday-group-blue text-xl">
           שגרירים
         </div>
-        <NewAmbassadorDialog />
+        <div className="flex gap-2">
+          <Suspense>
+            <ExportButton endpoint="/api/export/ambassadors" />
+          </Suspense>
+          <NewAmbassadorDialog />
+        </div>
       </div>
 
       <Suspense>
