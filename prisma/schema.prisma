@@ -56,7 +56,8 @@ model Lead {
   phone         String?
   country       String   @default("Israel")
   city          String?
-  status        String   @default("New") // New, Contacted, Meeting1, Meeting2, Negotiation, Registration, Contract, NotRelevant
+  status            String   @default("New") // New, Contacted, Qualified, Matched, Meeting1, Meeting2, Negotiation, Registration, Contract, ClosedWon, ClosedLost, NotRelevant
+  notRelevantReason String?  // Reason when status is set to NotRelevant
   dealType      String? // Investment, Vacation, Aliyah
   budget        String? // e.g. "1.5M-2M NIS"
   preferredArea String? // e.g. "Tel Aviv", "Herzliya"

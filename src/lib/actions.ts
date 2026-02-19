@@ -182,7 +182,7 @@ export async function updateDealStage(dealId: string, stage: string) {
   }
 }
 
-export async function updateLeadStatus(leadId: string, status: string) {
+export async function updateLeadStatus(leadId: string, status: string, notRelevantReason?: string) {
   await getAuthContext();
 
   const lead = await prisma.lead.findUnique({ where: { id: leadId } });
@@ -190,7 +190,10 @@ export async function updateLeadStatus(leadId: string, status: string) {
 
   await prisma.lead.update({
     where: { id: leadId },
-    data: { status },
+    data: {
+      status,
+      notRelevantReason: status === "NotRelevant" ? (notRelevantReason || null) : null,
+    },
   });
 
   revalidatePath(`/leads/${leadId}`);
